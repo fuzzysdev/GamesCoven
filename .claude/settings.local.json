@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem \"$env:LOCALAPPDATA\\\\GitHub CLI\" -ErrorAction SilentlyContinue; Get-ChildItem \"$env:USERPROFILE\\\\.config\\\\gh\" -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-ChildItem \"$env:USERPROFILE\\\\.config\" -ErrorAction SilentlyContinue | Select-Object Name)",
+      "PowerShell($env:PATH = [System.Environment]::GetEnvironmentVariable\\(\"PATH\", \"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"PATH\", \"User\"\\); gh auth token)"
+    ]
+  }
+}
