@@ -1,0 +1,659 @@
+
+<style>
+  :root {
+    --g-bg: #0e0a1a;
+    --g-surface: #1a1128;
+    --g-surface2: #241833;
+    --g-border: rgba(180,140,255,0.18);
+    --g-purple: #b48cff;
+    --g-pink: #ff7ec7;
+    --g-teal: #5dcaa5;
+    --g-amber: #fac775;
+    --g-text: #e8deff;
+    --g-muted: #9880cc;
+    --g-card: #1e1430;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: transparent; color: var(--g-text); font-family: var(--font-sans, sans-serif); }
+  .app { background: var(--g-bg); border-radius: 16px; border: 1px solid var(--g-border); overflow: hidden; min-height: 600px; }
+  .header { background: var(--g-surface); border-bottom: 1px solid var(--g-border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { font-size: 22px; }
+  .logo-text { font-size: 17px; font-weight: 500; color: var(--g-purple); letter-spacing: 0.3px; }
+  .logo-sub { font-size: 11px; color: var(--g-muted); }
+  .nav { display: flex; gap: 4px; }
+  .nav-btn { background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 6px 12px; color: var(--g-muted); font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
+  .nav-btn:hover { background: var(--g-surface2); color: var(--g-text); }
+  .nav-btn.active { background: rgba(180,140,255,0.12); border-color: rgba(180,140,255,0.3); color: var(--g-purple); }
+  .user-area { display: flex; align-items: center; gap: 8px; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #6e3fa3, #b48cff); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid rgba(180,140,255,0.4); }
+  .content { padding: 20px; }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* Library */
+  .toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .search-box { flex: 1; min-width: 180px; background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 8px; padding: 7px 12px; color: var(--g-text); font-size: 14px; }
+  .search-box::placeholder { color: var(--g-muted); }
+  .btn { background: rgba(180,140,255,0.1); border: 1px solid rgba(180,140,255,0.3); border-radius: 8px; padding: 7px 14px; color: var(--g-purple); font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; white-space: nowrap; }
+  .btn:hover { background: rgba(180,140,255,0.2); }
+  .btn.primary { background: rgba(180,140,255,0.2); border-color: var(--g-purple); }
+  .btn.pink { background: rgba(255,126,199,0.1); border-color: rgba(255,126,199,0.4); color: var(--g-pink); }
+  .btn.pink:hover { background: rgba(255,126,199,0.2); }
+  .btn.teal { background: rgba(93,202,165,0.1); border-color: rgba(93,202,165,0.4); color: var(--g-teal); }
+  .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .game-card { background: var(--g-card); border: 1px solid var(--g-border); border-radius: 12px; padding: 14px; position: relative; cursor: pointer; transition: border-color 0.15s; }
+  .game-card:hover { border-color: rgba(180,140,255,0.4); }
+  .game-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .game-emoji { font-size: 28px; }
+  .new-badge { background: rgba(255,126,199,0.15); border: 1px solid rgba(255,126,199,0.4); color: var(--g-pink); font-size: 10px; padding: 2px 7px; border-radius: 20px; font-weight: 500; }
+  .never-badge { background: rgba(250,199,117,0.12); border: 1px solid rgba(250,199,117,0.35); color: var(--g-amber); font-size: 10px; padding: 2px 7px; border-radius: 20px; }
+  .game-name { font-size: 15px; font-weight: 500; margin-bottom: 4px; color: var(--g-text); }
+  .game-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .meta-chip { background: var(--g-surface2); border: 1px solid var(--g-border); border-radius: 20px; padding: 2px 9px; font-size: 11px; color: var(--g-muted); display: flex; align-items: center; gap: 4px; }
+  .game-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .last-played { font-size: 11px; color: var(--g-muted); }
+  .star-row { display: flex; gap: 2px; }
+  .star { font-size: 12px; color: var(--g-border); }
+  .star.on { color: var(--g-amber); }
+  .type-tag { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .tag-strategy { background: rgba(180,140,255,0.12); color: var(--g-purple); }
+  .tag-party { background: rgba(255,126,199,0.12); color: var(--g-pink); }
+  .tag-coop { background: rgba(93,202,165,0.12); color: var(--g-teal); }
+  .tag-euro { background: rgba(250,199,117,0.12); color: var(--g-amber); }
+  .tag-horror { background: rgba(200,80,80,0.15); color: #f08080; }
+  .tag-word { background: rgba(130,200,255,0.12); color: #82c8ff; }
+
+  /* Modal */
+  .modal-bg { position: absolute; inset: 0; background: rgba(5,3,12,0.85); display: flex; align-items: center; justify-content: center; z-index: 100; border-radius: 16px; min-height: 600px; }
+  .modal { background: var(--g-surface); border: 1px solid rgba(180,140,255,0.3); border-radius: 14px; padding: 22px; width: 380px; max-width: 95%; position: relative; }
+  .modal-title { font-size: 16px; font-weight: 500; color: var(--g-purple); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .field { margin-bottom: 14px; }
+  .label { font-size: 12px; color: var(--g-muted); margin-bottom: 5px; display: block; }
+  .input { width: 100%; background: var(--g-surface2); border: 1px solid var(--g-border); border-radius: 8px; padding: 8px 12px; color: var(--g-text); font-size: 14px; }
+  .input:focus { outline: none; border-color: rgba(180,140,255,0.5); }
+  select.input option { background: #1a1128; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+  .close-btn { position: absolute; top: 12px; right: 14px; background: transparent; border: none; color: var(--g-muted); cursor: pointer; font-size: 18px; line-height: 1; }
+
+  /* Find Games */
+  .finder-panel { background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+  .finder-title { font-size: 14px; color: var(--g-muted); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+  .filter-group { display: flex; flex-direction: column; gap: 5px; }
+  .suggestions-title { font-size: 14px; font-weight: 500; color: var(--g-purple); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .suggestion-card { background: var(--g-card); border: 1px solid var(--g-border); border-radius: 12px; padding: 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .suggestion-info { display: flex; gap: 14px; align-items: center; }
+  .suggestion-emoji { font-size: 26px; }
+  .suggestion-name { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+  .suggestion-why { font-size: 12px; color: var(--g-muted); }
+  .score-badge { background: rgba(93,202,165,0.12); border: 1px solid rgba(93,202,165,0.3); color: var(--g-teal); font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 8px; text-align: center; }
+  .score-label { font-size: 10px; color: var(--g-muted); margin-top: 2px; }
+
+  /* Log */
+  .log-entry { background: var(--g-card); border: 1px solid var(--g-border); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+  .log-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .log-game { font-size: 15px; font-weight: 500; }
+  .log-date { font-size: 12px; color: var(--g-muted); }
+  .log-players { display: flex; gap: 6px; flex-wrap: wrap; }
+  .player-pill { background: var(--g-surface2); border: 1px solid var(--g-border); border-radius: 20px; padding: 3px 10px; font-size: 12px; display: flex; align-items: center; gap: 5px; }
+  .player-liked { color: var(--g-teal); }
+  .player-meh { color: var(--g-amber); }
+  .player-disliked { color: #f08080; }
+
+  /* Users */
+  .user-card { background: var(--g-card); border: 1px solid var(--g-border); border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+  .user-avatar-lg { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 500; flex-shrink: 0; }
+  .user-info { flex: 1; }
+  .user-name { font-size: 15px; font-weight: 500; margin-bottom: 3px; }
+  .user-stats { font-size: 12px; color: var(--g-muted); }
+  .user-games { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+
+  /* Night Planner */
+  .night-card { background: var(--g-card); border: 1px solid var(--g-border); border-radius: 12px; padding: 18px; margin-bottom: 12px; }
+  .night-title { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+  .night-meta { font-size: 12px; color: var(--g-muted); margin-bottom: 12px; }
+  .attendee-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .attendee-chip { background: var(--g-surface2); border: 1px solid rgba(180,140,255,0.25); border-radius: 20px; padding: 4px 10px; font-size: 12px; color: var(--g-purple); cursor: pointer; transition: all 0.15s; }
+  .attendee-chip.selected { background: rgba(180,140,255,0.15); border-color: var(--g-purple); }
+  .invite-info { background: rgba(93,202,165,0.07); border: 1px solid rgba(93,202,165,0.2); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--g-teal); display: flex; align-items: center; gap: 8px; }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--g-muted); }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; }
+  .section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .section-title { font-size: 15px; font-weight: 500; color: var(--g-text); }
+</style>
+
+<div class="app" style="position:relative;" id="app">
+
+<div class="header">
+  <div class="logo">
+    <span class="logo-icon">🦄</span>
+    <div><div class="logo-text">Grimoire & Games</div><div class="logo-sub">your haunted game library</div></div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="showView('library')" id="nav-library"><i class="ti ti-books" aria-hidden="true"></i> Library</button>
+    <button class="nav-btn" onclick="showView('find')" id="nav-find"><i class="ti ti-wand" aria-hidden="true"></i> Find</button>
+    <button class="nav-btn" onclick="showView('nights')" id="nav-nights"><i class="ti ti-moon" aria-hidden="true"></i> Nights</button>
+    <button class="nav-btn" onclick="showView('log')" id="nav-log"><i class="ti ti-notebook" aria-hidden="true"></i> Log</button>
+    <button class="nav-btn" onclick="showView('users')" id="nav-users"><i class="ti ti-users" aria-hidden="true"></i> Friends</button>
+  </div>
+  <div class="user-area">
+    <div class="avatar" onclick="showView('users')" title="Switch user">🐈</div>
+    <div style="font-size:13px;color:var(--g-muted);">Lyra</div>
+  </div>
+</div>
+
+<div class="content" style="position:relative;">
+
+<!-- LIBRARY -->
+<div class="view active" id="view-library">
+  <div class="toolbar">
+    <input class="search-box" placeholder="🔍 search your grimoire..." id="search-input" oninput="renderGames()" />
+    <select class="input" style="width:auto;min-width:130px;" id="filter-type" onchange="renderGames()">
+      <option value="">all types</option>
+      <option value="strategy">strategy</option>
+      <option value="party">party</option>
+      <option value="coop">co-op</option>
+      <option value="euro">euro</option>
+      <option value="horror">horror</option>
+      <option value="word">word</option>
+    </select>
+    <button class="btn primary" onclick="openAddGame()"><i class="ti ti-plus" aria-hidden="true"></i> Add game</button>
+  </div>
+  <div class="games-grid" id="games-grid"></div>
+</div>
+
+<!-- FIND GAMES -->
+<div class="view" id="view-find">
+  <div class="finder-panel">
+    <div class="finder-title"><i class="ti ti-sparkles" aria-hidden="true"></i> what kind of night is it?</div>
+    <div class="filter-row">
+      <div class="filter-group">
+        <span class="label">players tonight</span>
+        <select class="input" id="filt-players" style="width:110px;">
+          <option value="2">2 players</option>
+          <option value="3">3 players</option>
+          <option value="4" selected>4 players</option>
+          <option value="5">5 players</option>
+          <option value="6">6 players</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="label">time available</span>
+        <select class="input" id="filt-time" style="width:130px;">
+          <option value="30">~30 min</option>
+          <option value="60" selected>~1 hour</option>
+          <option value="90">~1.5 hours</option>
+          <option value="120">~2 hours</option>
+          <option value="999">no limit</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="label">game type</span>
+        <select class="input" id="filt-genre" style="width:120px;">
+          <option value="">anything</option>
+          <option value="strategy">strategy</option>
+          <option value="party">party</option>
+          <option value="coop">co-op</option>
+          <option value="euro">euro</option>
+          <option value="horror">horror</option>
+          <option value="word">word</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="label">include friends</span>
+        <select class="input" id="filt-library" style="width:130px;">
+          <option value="all">all libraries</option>
+          <option value="mine">just my games</option>
+        </select>
+      </div>
+      <button class="btn teal" onclick="runSuggestion()" style="align-self:flex-end;"><i class="ti ti-wand" aria-hidden="true"></i> Suggest!</button>
+    </div>
+  </div>
+  <div id="suggestions-out"></div>
+</div>
+
+<!-- NIGHTS -->
+<div class="view" id="view-nights">
+  <div class="section-head">
+    <div class="section-title">🌙 game nights</div>
+    <button class="btn primary" onclick="openPlanNight()"><i class="ti ti-calendar-plus" aria-hidden="true"></i> Plan a night</button>
+  </div>
+  <div id="nights-list"></div>
+</div>
+
+<!-- LOG -->
+<div class="view" id="view-log">
+  <div class="section-head">
+    <div class="section-title">📖 play log</div>
+    <button class="btn primary" onclick="openLogPlay()"><i class="ti ti-plus" aria-hidden="true"></i> Log a session</button>
+  </div>
+  <div id="log-list"></div>
+</div>
+
+<!-- USERS -->
+<div class="view" id="view-users">
+  <div class="section-head">
+    <div class="section-title">🐈 your coven</div>
+    <button class="btn pink" onclick="openAddUser()"><i class="ti ti-user-plus" aria-hidden="true"></i> Add friend</button>
+  </div>
+  <div id="users-list"></div>
+</div>
+
+<!-- MODAL CONTAINER -->
+<div id="modal-container"></div>
+
+</div>
+</div>
+
+<script>
+const TYPES = ['strategy','party','coop','euro','horror','word'];
+const TYPE_EMOJI = {strategy:'♟️',party:'🎉',coop:'🤝',euro:'🏰',horror:'💀',word:'🔤'};
+
+let state = {
+  games: [
+    {id:1,name:'Root',type:'strategy',minPlayers:2,maxPlayers:4,timeEst:90,bought:'2023-03-12',emoji:'🦊',owner:'Lyra',newGame:false},
+    {id:2,name:'Betrayal at House on the Hill',type:'horror',minPlayers:3,maxPlayers:6,timeEst:60,bought:'2023-08-20',emoji:'🏚️',owner:'Lyra',newGame:false},
+    {id:3,name:'Wingspan',type:'euro',minPlayers:1,maxPlayers:5,timeEst:70,bought:'2022-11-05',emoji:'🦜',owner:'Lyra',newGame:false},
+    {id:4,name:'Codenames',type:'word',minPlayers:4,maxPlayers:8,timeEst:30,bought:'2021-06-15',emoji:'🕵️',owner:'Lyra',newGame:false},
+    {id:5,name:'Gloomhaven',type:'coop',minPlayers:1,maxPlayers:4,timeEst:120,bought:'2023-01-30',emoji:'⚔️',owner:'Lyra',newGame:false},
+    {id:6,name:'Ticket to Ride',type:'strategy',minPlayers:2,maxPlayers:5,timeEst:75,bought:'2020-12-25',emoji:'🚂',owner:'Lyra',newGame:false},
+    {id:7,name:'Mysterium',type:'coop',minPlayers:2,maxPlayers:7,timeEst:45,bought:'2024-10-01',emoji:'👻',owner:'Lyra',newGame:true},
+    {id:8,name:'Exploding Kittens',type:'party',minPlayers:2,maxPlayers:5,timeEst:20,bought:'2024-12-15',emoji:'🐱',owner:'Lyra',newGame:true},
+    {id:9,name:'Pandemic',type:'coop',minPlayers:2,maxPlayers:4,timeEst:60,bought:'2022-05-10',emoji:'🦠',owner:'Raven',newGame:false},
+    {id:10,name:'Dixit',type:'party',minPlayers:3,maxPlayers:8,timeEst:40,bought:'2023-07-18',emoji:'🎨',owner:'Raven',newGame:false},
+    {id:11,name:'Spirit Island',type:'strategy',minPlayers:1,maxPlayers:4,timeEst:120,bought:'2025-02-01',emoji:'🌊',owner:'Crow',newGame:true},
+  ],
+  playLog: [
+    {id:1,gameId:2,gameName:'Betrayal at House on the Hill',date:'2025-04-12',players:[{name:'Lyra',rating:5},{name:'Raven',rating:4},{name:'Crow',rating:5}],notes:'Amazing haunting reveal!'},
+    {id:2,gameId:3,gameName:'Wingspan',date:'2025-03-28',players:[{name:'Lyra',rating:4},{name:'Raven',rating:5}],notes:''},
+    {id:3,gameId:4,gameName:'Codenames',date:'2025-05-01',players:[{name:'Lyra',rating:3},{name:'Raven',rating:4},{name:'Crow',rating:3},{name:'Moth',rating:4}],notes:'Close game'},
+    {id:4,gameId:1,gameName:'Root',date:'2025-02-14',players:[{name:'Lyra',rating:5},{name:'Crow',rating:4}],notes:''},
+  ],
+  users: [
+    {id:1,name:'Lyra',emoji:'🐈',color:'#b48cff',games:[1,2,3,4,5,6,7,8]},
+    {id:2,name:'Raven',emoji:'🦅',color:'#ff7ec7',games:[9,10,4]},
+    {id:3,name:'Crow',emoji:'🐦‍⬛',color:'#5dcaa5',games:[11,1,4]},
+    {id:4,name:'Moth',emoji:'🦋',color:'#fac775',games:[4,10]},
+  ],
+  nights: [
+    {id:1,date:'2025-06-07',name:'Summer Spook Night',attendees:['Lyra','Raven','Crow'],venue:'Lyra\'s place',calendarSent:true},
+  ],
+  nextId: 20,
+};
+
+function getLastPlayed(gameId) {
+  const entries = state.playLog.filter(l=>l.gameId===gameId).sort((a,b)=>new Date(b.date)-new Date(a.date));
+  return entries.length ? entries[0] : null;
+}
+
+function avgRating(gameId) {
+  const all = state.playLog.filter(l=>l.gameId===gameId).flatMap(l=>l.players.map(p=>p.rating));
+  if(!all.length) return null;
+  return (all.reduce((a,b)=>a+b,0)/all.length).toFixed(1);
+}
+
+function typeTag(type) {
+  return `<span class="type-tag tag-${type}">${type}</span>`;
+}
+
+function renderGames() {
+  const search = (document.getElementById('search-input')||{value:''}).value.toLowerCase();
+  const typeF = (document.getElementById('filter-type')||{value:''}).value;
+  let games = state.games.filter(g=>{
+    const matchS = g.name.toLowerCase().includes(search);
+    const matchT = !typeF || g.type===typeF;
+    return matchS && matchT;
+  });
+  const grid = document.getElementById('games-grid');
+  if(!grid) return;
+  if(!games.length){grid.innerHTML='<div class="empty-state"><div class="empty-icon">🔮</div><p>no games match your search</p></div>';return;}
+  grid.innerHTML = games.map(g=>{
+    const lp = getLastPlayed(g.id);
+    const rating = avgRating(g.id);
+    const stars = rating ? Array.from({length:5},(_,i)=>`<span class="star${i<Math.round(rating)?' on':''}">★</span>`).join('') : '';
+    const badge = g.newGame ? '<span class="new-badge">✨ new</span>' : (lp ? '' : '<span class="never-badge">never played</span>');
+    const lastInfo = lp ? `last played ${lp.date.slice(0,7)}` : (g.newGame ? 'fresh out the box' : 'dust gathering...');
+    return `<div class="game-card" onclick="openGameDetail(${g.id})">
+      <div class="game-card-top"><span class="game-emoji">${g.emoji}</span>${badge}</div>
+      <div class="game-name">${g.name}</div>
+      <div class="game-meta">
+        ${typeTag(g.type)}
+        <span class="meta-chip"><i class="ti ti-users" style="font-size:11px"></i>${g.minPlayers}–${g.maxPlayers}p</span>
+        <span class="meta-chip"><i class="ti ti-clock" style="font-size:11px"></i>~${g.timeEst}m</span>
+      </div>
+      <div class="game-footer">
+        <span class="last-played">${lastInfo}</span>
+        <div class="star-row">${stars}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderLog() {
+  const list = document.getElementById('log-list');
+  if(!list) return;
+  const sorted = [...state.playLog].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!sorted.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">📖</div><p>no sessions logged yet</p></div>';return;}
+  list.innerHTML = sorted.map(entry=>{
+    const ratingEmoji = r => r>=5?'😍':r>=4?'😊':r>=3?'😐':'😕';
+    const pills = entry.players.map(p=>`<span class="player-pill">${p.name} <span class="${p.rating>=4?'player-liked':p.rating>=3?'player-meh':'player-disliked'}">${ratingEmoji(p.rating)}</span></span>`).join('');
+    return `<div class="log-entry">
+      <div class="log-header"><div class="log-game">${entry.gameName}</div><div class="log-date">${entry.date}</div></div>
+      <div class="log-players">${pills}</div>
+      ${entry.notes?`<div style="font-size:12px;color:var(--g-muted);margin-top:8px;">"${entry.notes}"</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderUsers() {
+  const list = document.getElementById('users-list');
+  if(!list) return;
+  list.innerHTML = state.users.map(u=>{
+    const sessions = state.playLog.filter(l=>l.players.some(p=>p.name===u.name)).length;
+    const ownedNames = state.games.filter(g=>u.games.includes(g.id)).map(g=>`<span class="meta-chip" style="font-size:11px;">${g.emoji} ${g.name}</span>`).join('');
+    return `<div class="user-card">
+      <div class="user-avatar-lg" style="background:${u.color}22;color:${u.color};border:1px solid ${u.color}44;">${u.emoji}</div>
+      <div class="user-info">
+        <div class="user-name">${u.name}</div>
+        <div class="user-stats">${u.games.length} games · ${sessions} sessions played</div>
+        <div class="user-games">${ownedNames}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderNights() {
+  const list = document.getElementById('nights-list');
+  if(!list) return;
+  if(!state.nights.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">🌙</div><p>no nights planned yet. summon your coven!</p></div>';return;}
+  list.innerHTML = state.nights.map(n=>`<div class="night-card">
+    <div class="night-title">${n.name}</div>
+    <div class="night-meta">${n.date} · ${n.venue}</div>
+    <div class="attendee-row">${n.attendees.map(a=>`<span class="attendee-chip selected">${a}</span>`).join('')}</div>
+    ${n.calendarSent?`<div class="invite-info"><i class="ti ti-calendar-check" aria-hidden="true"></i> calendar invites sent to attendees</div>`:''}
+  </div>`).join('');
+}
+
+function runSuggestion() {
+  const players = parseInt(document.getElementById('filt-players').value);
+  const time = parseInt(document.getElementById('filt-time').value);
+  const genre = document.getElementById('filt-genre').value;
+  const lib = document.getElementById('filt-library').value;
+  let pool = lib==='mine' ? state.games.filter(g=>g.owner==='Lyra') : state.games;
+  pool = pool.filter(g=> players >= g.minPlayers && players <= g.maxPlayers && g.timeEst <= time && (!genre || g.type===genre));
+  
+  pool = pool.map(g=>{
+    const lp = getLastPlayed(g.id);
+    const daysSince = lp ? (Date.now()-new Date(lp.date))/(1000*86400) : 9999;
+    const avgR = avgRating(g.id);
+    let score = 50;
+    if(daysSince > 90) score += 20;
+    else if(daysSince > 30) score += 10;
+    if(g.newGame) score += 25;
+    if(avgR && avgR>=4) score += 15;
+    if(!lp) score += 15;
+    return {...g, score, daysSince, avgR, lp};
+  }).sort((a,b)=>b.score-a.score).slice(0,4);
+
+  const out = document.getElementById('suggestions-out');
+  if(!pool.length){out.innerHTML='<div class="empty-state"><div class="empty-icon">🔮</div><p>no games match those constraints. try loosening the filters!</p></div>';return;}
+  
+  out.innerHTML = `<div class="suggestions-title"><i class="ti ti-sparkles" aria-hidden="true"></i> suggested for tonight</div>` +
+  pool.map((g,i)=>{
+    const reasons = [];
+    if(g.newGame) reasons.push('✨ brand new!');
+    else if(!g.lp) reasons.push('🕸️ never played');
+    else if(g.daysSince>90) reasons.push(`🗓️ last played ${Math.round(g.daysSince)}d ago`);
+    else reasons.push(`last played ${g.lp.date.slice(0,7)}`);
+    if(g.avgR) reasons.push(`avg ★ ${g.avgR}`);
+    return `<div class="suggestion-card">
+      <div class="suggestion-info">
+        <div style="font-size:32px;min-width:40px;">${i===0?'👑':i===1?'⭐':i===2?'✦':'·'}</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span class="suggestion-emoji">${g.emoji}</span>
+            <span class="suggestion-name">${g.name}</span>
+            ${typeTag(g.type)}
+            ${g.newGame?'<span class="new-badge">✨ new</span>':''}
+          </div>
+          <div class="suggestion-why">${reasons.join(' · ')} · ${g.minPlayers}–${g.maxPlayers}p · ~${g.timeEst}m</div>
+        </div>
+      </div>
+      <div>
+        <div class="score-badge">${g.score}</div>
+        <div class="score-label">match score</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  if(name==='library') renderGames();
+  if(name==='log') renderLog();
+  if(name==='users') renderUsers();
+  if(name==='nights') renderNights();
+  if(name==='find') document.getElementById('suggestions-out').innerHTML='';
+}
+
+function closeModal() { document.getElementById('modal-container').innerHTML=''; }
+
+function openAddGame() {
+  document.getElementById('modal-container').innerHTML = `
+  <div class="modal-bg" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <div class="modal-title">🎲 add a game to your grimoire</div>
+    <div class="field"><span class="label">game name</span><input class="input" id="m-name" placeholder="e.g. Gloom" /></div>
+    <div class="row2">
+      <div class="field"><span class="label">type</span>
+        <select class="input" id="m-type">${TYPES.map(t=>`<option value="${t}">${t}</option>`).join('')}</select>
+      </div>
+      <div class="field"><span class="label">emoji icon</span><input class="input" id="m-emoji" placeholder="🎲" style="font-size:20px;" /></div>
+    </div>
+    <div class="row2">
+      <div class="field"><span class="label">min players</span><input class="input" id="m-min" type="number" min="1" max="10" value="2"/></div>
+      <div class="field"><span class="label">max players</span><input class="input" id="m-max" type="number" min="1" max="20" value="4"/></div>
+    </div>
+    <div class="field"><span class="label">estimated time (minutes)</span><input class="input" id="m-time" type="number" min="10" max="360" value="60"/></div>
+    <div class="field"><span class="label">date purchased</span><input class="input" id="m-date" type="date" value="${new Date().toISOString().slice(0,10)}"/></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">cancel</button>
+      <button class="btn primary" onclick="saveGame()"><i class="ti ti-check" aria-hidden="true"></i> add game</button>
+    </div>
+  </div>
+  </div>`;
+}
+
+function saveGame() {
+  const name = document.getElementById('m-name').value.trim();
+  if(!name) return;
+  const bought = document.getElementById('m-date').value;
+  const existing = state.games.find(g=>g.bought>=bought);
+  state.games.push({
+    id: state.nextId++,
+    name,
+    type: document.getElementById('m-type').value,
+    emoji: document.getElementById('m-emoji').value || '🎲',
+    minPlayers: parseInt(document.getElementById('m-min').value),
+    maxPlayers: parseInt(document.getElementById('m-max').value),
+    timeEst: parseInt(document.getElementById('m-time').value),
+    bought,
+    owner: 'Lyra',
+    newGame: true,
+  });
+  closeModal();
+  renderGames();
+}
+
+function openGameDetail(id) {
+  const g = state.games.find(x=>x.id===id);
+  if(!g) return;
+  const lp = getLastPlayed(id);
+  const rating = avgRating(id);
+  const sessions = state.playLog.filter(l=>l.gameId===id);
+  document.getElementById('modal-container').innerHTML = `
+  <div class="modal-bg" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()" style="width:420px;">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <div style="display:flex;gap:14px;align-items:center;margin-bottom:16px;">
+      <span style="font-size:40px;">${g.emoji}</span>
+      <div>
+        <div style="font-size:17px;font-weight:500;margin-bottom:4px;">${g.name} ${g.newGame?'<span class="new-badge">✨ new</span>':''}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">${typeTag(g.type)}<span class="meta-chip">${g.minPlayers}–${g.maxPlayers}p</span><span class="meta-chip">~${g.timeEst}m</span></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;">
+      <div style="background:var(--g-surface2);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-size:20px;font-weight:500;color:var(--g-purple);">${sessions.length}</div>
+        <div style="font-size:11px;color:var(--g-muted);">sessions</div>
+      </div>
+      <div style="background:var(--g-surface2);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-size:20px;font-weight:500;color:var(--g-amber);">${rating||'—'}</div>
+        <div style="font-size:11px;color:var(--g-muted);">avg rating</div>
+      </div>
+      <div style="background:var(--g-surface2);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-size:13px;font-weight:500;color:var(--g-teal);">${lp?lp.date.slice(0,7):'never'}</div>
+        <div style="font-size:11px;color:var(--g-muted);">last played</div>
+      </div>
+    </div>
+    ${sessions.length ? `<div style="font-size:13px;color:var(--g-muted);margin-bottom:8px;">recent sessions</div>
+    ${sessions.slice(-3).reverse().map(s=>`<div style="background:var(--g-surface2);border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:12px;display:flex;justify-content:space-between;"><span>${s.date}</span><span style="color:var(--g-muted);">${s.players.map(p=>p.name).join(', ')}</span></div>`).join('')}` : ''}
+    <div class="modal-actions" style="margin-top:12px;">
+      <button class="btn" onclick="closeModal()">close</button>
+      <button class="btn teal" onclick="closeModal();openLogPlay(${id})"><i class="ti ti-plus" aria-hidden="true"></i> log a session</button>
+    </div>
+  </div>
+  </div>`;
+}
+
+function openLogPlay(preGameId) {
+  const options = state.games.map(g=>`<option value="${g.id}" ${preGameId===g.id?'selected':''}>${g.emoji} ${g.name}</option>`).join('');
+  const players = state.users.map(u=>`<label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer;"><input type="checkbox" id="lp-${u.id}" style="width:auto;" ${u.name==='Lyra'?'checked':''} /><span>${u.emoji} ${u.name}</span></label>`).join('');
+  document.getElementById('modal-container').innerHTML = `
+  <div class="modal-bg" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <div class="modal-title">📖 log a session</div>
+    <div class="field"><span class="label">game</span><select class="input" id="log-game">${options}</select></div>
+    <div class="field"><span class="label">date</span><input class="input" id="log-date" type="date" value="${new Date().toISOString().slice(0,10)}"/></div>
+    <div class="field"><span class="label">who played?</span>${players}</div>
+    <div class="field"><span class="label">your rating</span>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        ${[1,2,3,4,5].map(n=>`<button onclick="setRating(${n})" id="rate-${n}" style="background:var(--g-surface2);border:1px solid var(--g-border);border-radius:6px;padding:6px 10px;color:var(--g-muted);cursor:pointer;font-size:14px;">${n}★</button>`).join('')}
+      </div>
+    </div>
+    <div class="field"><span class="label">notes</span><input class="input" id="log-notes" placeholder="optional memorable moments..." /></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">cancel</button>
+      <button class="btn teal" onclick="saveLog()"><i class="ti ti-check" aria-hidden="true"></i> save</button>
+    </div>
+  </div>
+  </div>`;
+  window._selectedRating = 4;
+  setRating(4);
+}
+
+function setRating(n) {
+  window._selectedRating = n;
+  [1,2,3,4,5].forEach(i=>{
+    const b = document.getElementById('rate-'+i);
+    if(b) b.style.color = i<=n ? '#fac775' : 'var(--g-muted)';
+  });
+}
+
+function saveLog() {
+  const gameId = parseInt(document.getElementById('log-game').value);
+  const game = state.games.find(g=>g.id===gameId);
+  const players = state.users.filter(u=>document.getElementById('lp-'+u.id)?.checked).map(u=>({name:u.name,rating:window._selectedRating||3}));
+  if(!players.length) return;
+  state.playLog.push({id:state.nextId++,gameId,gameName:game.name,date:document.getElementById('log-date').value,players,notes:document.getElementById('log-notes').value});
+  if(game.newGame) game.newGame = false;
+  closeModal();
+  renderLog();
+}
+
+function openPlanNight() {
+  const attendees = state.users.map(u=>`<span class="attendee-chip" id="att-${u.id}" onclick="toggleAttendee(${u.id})">${u.emoji} ${u.name}</span>`).join('');
+  document.getElementById('modal-container').innerHTML = `
+  <div class="modal-bg" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <div class="modal-title">🌙 plan a game night</div>
+    <div class="field"><span class="label">night name</span><input class="input" id="nn-name" placeholder="e.g. Friday Fright Night"/></div>
+    <div class="row2">
+      <div class="field"><span class="label">date</span><input class="input" id="nn-date" type="date" value="${new Date().toISOString().slice(0,10)}"/></div>
+      <div class="field"><span class="label">time</span><input class="input" id="nn-time" type="time" value="19:00"/></div>
+    </div>
+    <div class="field"><span class="label">venue</span><input class="input" id="nn-venue" placeholder="your haunted mansion"/></div>
+    <div class="field"><span class="label">who's coming? (tap to select)</span>
+      <div class="attendee-row" style="margin-top:8px;">${attendees}</div>
+    </div>
+    <div class="field">
+      <div class="invite-info"><i class="ti ti-mail" aria-hidden="true"></i> calendar invites will be sent to all attendees via their linked email</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">cancel</button>
+      <button class="btn primary" onclick="saveNight()"><i class="ti ti-calendar-plus" aria-hidden="true"></i> plan it!</button>
+    </div>
+  </div>
+  </div>`;
+  window._selectedAttendees = new Set(['Lyra']);
+  updateAttendeeChips();
+}
+
+function toggleAttendee(uid) {
+  const u = state.users.find(x=>x.id===uid);
+  if(!u) return;
+  if(window._selectedAttendees.has(u.name)) window._selectedAttendees.delete(u.name);
+  else window._selectedAttendees.add(u.name);
+  updateAttendeeChips();
+}
+
+function updateAttendeeChips() {
+  state.users.forEach(u=>{
+    const el = document.getElementById('att-'+u.id);
+    if(el) el.classList.toggle('selected', window._selectedAttendees.has(u.name));
+  });
+}
+
+function saveNight() {
+  const name = document.getElementById('nn-name').value.trim() || 'Game Night';
+  state.nights.push({id:state.nextId++,name,date:document.getElementById('nn-date').value,venue:document.getElementById('nn-venue').value||'TBD',attendees:[...window._selectedAttendees],calendarSent:true});
+  closeModal();
+  renderNights();
+}
+
+function openAddUser() {
+  document.getElementById('modal-container').innerHTML = `
+  <div class="modal-bg" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <div class="modal-title">🐈 add a friend to your coven</div>
+    <div class="field"><span class="label">name</span><input class="input" id="u-name" placeholder="friend's name"/></div>
+    <div class="field"><span class="label">emoji avatar</span><input class="input" id="u-emoji" placeholder="🦇" style="font-size:20px;"/></div>
+    <div class="field"><span class="label">email (for invites)</span><input class="input" id="u-email" type="email" placeholder="friend@email.com"/></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">cancel</button>
+      <button class="btn primary" onclick="saveUser()"><i class="ti ti-check" aria-hidden="true"></i> add to coven</button>
+    </div>
+  </div>
+  </div>`;
+}
+
+function saveUser() {
+  const name = document.getElementById('u-name').value.trim();
+  if(!name) return;
+  const colors = ['#b48cff','#ff7ec7','#5dcaa5','#fac775','#82c8ff','#f08080'];
+  state.users.push({id:state.nextId++,name,emoji:document.getElementById('u-emoji').value||'🎲',color:colors[state.users.length%colors.length],games:[]});
+  closeModal();
+  renderUsers();
+}
+
+renderGames();
+</script>

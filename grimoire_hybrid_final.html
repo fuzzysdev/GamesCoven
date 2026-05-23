@@ -1,0 +1,737 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --g-bg: #0e0a1a;
+  --g-surface: #1a1128;
+  --g-surface2: #241833;
+  --g-border: rgba(180,140,255,0.18);
+  --g-border-hover: rgba(180,140,255,0.4);
+  --g-purple: #b48cff;
+  --g-pink: #ff7ec7;
+  --g-teal: #5dcaa5;
+  --g-amber: #fac775;
+  --g-text: #e8deff;
+  --g-muted: #9880cc;
+  --g-card: #1e1430;
+}
+
+body { background: transparent; font-family: 'Crimson Text', serif; color: var(--g-text); }
+
+.app { background: var(--g-bg); border-radius: 16px; border: 1px solid var(--g-border); overflow: hidden; min-height: 580px; }
+
+/* HEADER */
+.header { background: var(--g-surface); border-bottom: 1px solid var(--g-border); padding: 14px 22px; display: flex; align-items: center; justify-content: space-between; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon { font-size: 22px; }
+.logo-text { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--g-purple); letter-spacing: 0.2px; }
+.logo-sub { font-size: 13px; font-style: italic; color: var(--g-muted); }
+.nav { display: flex; gap: 3px; }
+.nav-btn { background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 6px 13px; color: var(--g-muted); font-family: 'Crimson Text', serif; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s; }
+.nav-btn:hover { background: var(--g-surface2); color: var(--g-text); }
+.nav-btn.active { background: rgba(180,140,255,0.12); border-color: rgba(180,140,255,0.3); color: var(--g-purple); }
+.user-area { display: flex; align-items: center; gap: 8px; }
+.avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(180,140,255,0.15); border: 1px solid rgba(180,140,255,0.4); display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; }
+
+/* CONTENT */
+.content { padding: 20px 22px; position: relative; }
+.view { display: none; }
+.view.active { display: block; }
+
+/* TOOLBAR */
+.toolbar { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; }
+.search-box { flex: 1; min-width: 180px; background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 8px; padding: 7px 12px; color: var(--g-text); font-family: 'Crimson Text', serif; font-size: 15px; }
+.search-box::placeholder { color: var(--g-muted); }
+.search-box:focus { outline: none; border-color: rgba(180,140,255,0.4); }
+.filter-select { background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 8px; padding: 7px 12px; color: var(--g-text); font-family: 'Crimson Text', serif; font-size: 15px; cursor: pointer; }
+.filter-select option { background: #1a1128; }
+.filter-select:focus { outline: none; }
+.btn { background: rgba(180,140,255,0.1); border: 1px solid rgba(180,140,255,0.3); border-radius: 8px; padding: 7px 16px; color: var(--g-purple); font-family: 'Crimson Text', serif; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; white-space: nowrap; }
+.btn:hover { background: rgba(180,140,255,0.2); }
+.btn.teal { background: rgba(93,202,165,0.1); border-color: rgba(93,202,165,0.4); color: var(--g-teal); }
+.btn.teal:hover { background: rgba(93,202,165,0.2); }
+.btn.pink { background: rgba(255,126,199,0.1); border-color: rgba(255,126,199,0.4); color: var(--g-pink); }
+
+/* TAROT-STYLE GAME CARDS */
+.games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 14px; }
+
+.game-card {
+  background: var(--g-card);
+  border: 1px solid var(--g-border);
+  border-radius: 10px 10px 6px 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+.game-card:hover {
+  border-color: var(--g-border-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.5), 0 0 16px rgba(180,140,255,0.06);
+}
+
+.card-header-strip {
+  background: rgba(180,140,255,0.06);
+  border-bottom: 1px solid var(--g-border);
+  padding: 7px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-num { font-family: 'Crimson Text', serif; font-style: italic; font-size: 12px; color: var(--g-muted); opacity: 0.6; }
+.card-type-icon { font-size: 13px; opacity: 0.55; }
+
+.card-art {
+  padding: 18px 12px 12px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.card-emoji { font-size: 38px; display: block; margin-bottom: 8px; }
+.art-rule {
+  width: 36px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(180,140,255,0.35), transparent);
+  margin: 0 auto;
+}
+
+.card-body { padding: 10px 14px 14px; flex: 1; display: flex; flex-direction: column; }
+
+.card-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--g-text);
+  text-align: center;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.card-type-label {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--g-muted);
+  text-align: center;
+  margin-bottom: 10px;
+  opacity: 0.7;
+}
+
+.card-meta-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.meta-chip {
+  background: var(--g-surface2);
+  border: 1px solid var(--g-border);
+  border-radius: 20px;
+  padding: 2px 9px;
+  font-size: 11px;
+  color: var(--g-muted);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.card-footer-inner {
+  border-top: 1px solid rgba(180,140,255,0.08);
+  padding-top: 9px;
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.last-played-txt { font-size: 11px; font-style: italic; color: var(--g-muted); opacity: 0.65; }
+.star-row { display: flex; gap: 2px; }
+.star { font-size: 11px; color: rgba(180,140,255,0.15); }
+.star.on { color: var(--g-amber); }
+
+/* BADGES */
+.new-badge {
+  position: absolute;
+  top: 10px; right: -16px;
+  background: var(--g-pink);
+  color: #1a0828;
+  font-family: 'Crimson Text', serif;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 20px;
+  transform: rotate(35deg);
+  letter-spacing: 0.5px;
+}
+.never-badge {
+  background: rgba(250,199,117,0.12);
+  border: 1px solid rgba(250,199,117,0.3);
+  color: var(--g-amber);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-align: center;
+  margin-bottom: 6px;
+  font-style: italic;
+}
+
+/* TYPE TAG COLORS */
+.tag { font-size: 11px; font-style: italic; }
+.tag-strategy { color: var(--g-purple); }
+.tag-party { color: var(--g-pink); }
+.tag-coop { color: var(--g-teal); }
+.tag-euro { color: var(--g-amber); }
+.tag-horror { color: #f08080; }
+.tag-word { color: #82c8ff; }
+
+/* FIND */
+.finder-panel { background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 12px; padding: 18px 20px; margin-bottom: 20px; }
+.finder-label { font-size: 13px; font-style: italic; color: var(--g-muted); margin-bottom: 14px; }
+.filter-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.filter-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 100px; }
+.filter-lbl { font-size: 11px; color: var(--g-muted); font-style: italic; letter-spacing: 0.5px; }
+
+.suggestions-label { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--g-purple); margin-bottom: 14px; }
+
+.suggestion-card {
+  background: var(--g-card);
+  border: 1px solid var(--g-border);
+  border-left: 3px solid var(--g-purple);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: border-color 0.15s;
+}
+.suggestion-card:first-child { border-left-color: var(--g-pink); }
+.suggestion-card:nth-child(2) { border-left-color: var(--g-purple); }
+.suggestion-card:nth-child(3) { border-left-color: var(--g-teal); }
+.suggestion-card:nth-child(4) { border-left-color: var(--g-amber); }
+.suggestion-card:hover { border-color: var(--g-border-hover); border-left-color: inherit; }
+
+.sug-rank { font-family: 'Playfair Display', serif; font-style: italic; font-size: 26px; font-weight: 700; color: rgba(180,140,255,0.12); min-width: 28px; line-height: 1; }
+.sug-emoji { font-size: 28px; }
+.sug-info { flex: 1; }
+.sug-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+.sug-why { font-size: 13px; font-style: italic; color: var(--g-muted); }
+.sug-score { background: var(--g-surface2); border: 1px solid var(--g-border); border-radius: 8px; padding: 6px 12px; text-align: center; }
+.sug-score-num { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--g-teal); display: block; }
+.sug-score-lbl { font-size: 10px; font-style: italic; color: var(--g-muted); }
+
+/* LOG */
+.log-entry { background: var(--g-card); border: 1px solid var(--g-border); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+.log-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.log-game { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; }
+.log-date { font-size: 12px; font-style: italic; color: var(--g-muted); }
+.log-players { display: flex; gap: 6px; flex-wrap: wrap; }
+.player-pill { background: var(--g-surface2); border: 1px solid var(--g-border); border-radius: 20px; padding: 3px 10px; font-size: 13px; display: flex; align-items: center; gap: 5px; }
+.log-note { font-size: 13px; font-style: italic; color: var(--g-muted); margin-top: 8px; opacity: 0.75; }
+
+/* NIGHTS */
+.night-card { background: var(--g-card); border: 1px solid var(--g-border); border-radius: 10px; padding: 18px; margin-bottom: 12px; }
+.night-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; margin-bottom: 3px; }
+.night-meta { font-size: 13px; font-style: italic; color: var(--g-muted); margin-bottom: 12px; }
+.attendee-chips { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 12px; }
+.attendee-chip { background: rgba(180,140,255,0.08); border: 1px solid rgba(180,140,255,0.22); border-radius: 20px; padding: 4px 12px; font-size: 13px; color: var(--g-purple); }
+.invite-row { font-size: 13px; font-style: italic; color: var(--g-teal); display: flex; align-items: center; gap: 7px; }
+
+/* USERS */
+.user-card { background: var(--g-card); border: 1px solid var(--g-border); border-radius: 10px; padding: 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+.user-avatar-lg { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; border: 1px solid rgba(180,140,255,0.2); }
+.user-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+.user-stats { font-size: 13px; font-style: italic; color: var(--g-muted); margin-bottom: 6px; }
+.user-game-chips { display: flex; gap: 5px; flex-wrap: wrap; }
+
+.section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.section-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--g-text); }
+.empty-state { text-align: center; padding: 40px 20px; color: var(--g-muted); font-style: italic; }
+
+/* MODAL */
+.modal-bg { position: absolute; inset: 0; background: rgba(5,3,12,0.88); display: flex; align-items: center; justify-content: center; z-index: 100; border-radius: 16px; min-height: 580px; }
+.modal { background: var(--g-surface); border: 1px solid rgba(180,140,255,0.3); border-radius: 12px; padding: 22px; width: 380px; max-width: 95%; position: relative; }
+.modal-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--g-purple); margin-bottom: 16px; }
+.close-btn { position: absolute; top: 12px; right: 14px; background: transparent; border: none; color: var(--g-muted); cursor: pointer; font-size: 18px; line-height: 1; font-family: serif; }
+.field { margin-bottom: 13px; }
+.label { font-size: 12px; font-style: italic; color: var(--g-muted); margin-bottom: 4px; display: block; }
+.input { width: 100%; background: var(--g-surface2); border: 1px solid var(--g-border); border-radius: 8px; padding: 8px 12px; color: var(--g-text); font-family: 'Crimson Text', serif; font-size: 15px; }
+.input:focus { outline: none; border-color: rgba(180,140,255,0.4); }
+select.input option { background: #1a1128; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
+</style>
+
+<div class="app" style="position:relative;" id="app">
+
+<div class="header">
+  <div class="logo">
+    <span class="logo-icon">🦄</span>
+    <div>
+      <div class="logo-text">Grimoire & Games</div>
+      <div class="logo-sub">your haunted game library</div>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="showView('library')" id="nav-library">📚 Library</button>
+    <button class="nav-btn" onclick="showView('find')" id="nav-find">🔮 Find</button>
+    <button class="nav-btn" onclick="showView('nights')" id="nav-nights">🌙 Nights</button>
+    <button class="nav-btn" onclick="showView('log')" id="nav-log">📖 Log</button>
+    <button class="nav-btn" onclick="showView('users')" id="nav-users">🐈 Friends</button>
+  </div>
+  <div class="user-area">
+    <div class="avatar">🐈</div>
+    <div style="font-size:14px;font-style:italic;color:var(--g-muted);">Lyra</div>
+  </div>
+</div>
+
+<div class="content" style="position:relative;">
+
+<!-- LIBRARY -->
+<div class="view active" id="view-library">
+  <div class="toolbar">
+    <input class="search-box" placeholder="🔍 search your grimoire..." id="search-input" oninput="renderGames()" />
+    <select class="filter-select" id="filter-type" onchange="renderGames()">
+      <option value="">all types</option>
+      <option value="strategy">strategy</option>
+      <option value="party">party</option>
+      <option value="coop">co-op</option>
+      <option value="euro">euro</option>
+      <option value="horror">horror</option>
+      <option value="word">word</option>
+    </select>
+    <button class="btn" onclick="openAddGame()"><i class="ti ti-plus" aria-hidden="true"></i> Add game</button>
+  </div>
+  <div class="games-grid" id="games-grid"></div>
+</div>
+
+<!-- FIND -->
+<div class="view" id="view-find">
+  <div class="finder-panel">
+    <div class="finder-label">what kind of night is it?</div>
+    <div class="filter-row">
+      <div class="filter-group">
+        <span class="filter-lbl">players tonight</span>
+        <select class="filter-select" id="filt-players" style="width:100%;">
+          <option value="2">2 players</option><option value="3">3 players</option><option value="4" selected>4 players</option><option value="5">5 players</option><option value="6">6 players</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-lbl">time available</span>
+        <select class="filter-select" id="filt-time" style="width:100%;">
+          <option value="30">~30 min</option><option value="60" selected>~1 hour</option><option value="90">~1.5 hours</option><option value="120">~2 hours</option><option value="999">no limit</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-lbl">game type</span>
+        <select class="filter-select" id="filt-genre" style="width:100%;">
+          <option value="">anything</option><option value="strategy">strategy</option><option value="party">party</option><option value="coop">co-op</option><option value="euro">euro</option><option value="horror">horror</option><option value="word">word</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-lbl">include friends</span>
+        <select class="filter-select" id="filt-library" style="width:100%;">
+          <option value="all">all libraries</option><option value="mine">just my games</option>
+        </select>
+      </div>
+      <button class="btn teal" onclick="runSuggestion()" style="align-self:flex-end;">🔮 Suggest!</button>
+    </div>
+  </div>
+  <div id="suggestions-out"></div>
+</div>
+
+<!-- NIGHTS -->
+<div class="view" id="view-nights">
+  <div class="section-head">
+    <div class="section-title">🌙 game nights</div>
+    <button class="btn" onclick="openPlanNight()"><i class="ti ti-plus" aria-hidden="true"></i> Plan a night</button>
+  </div>
+  <div id="nights-list"></div>
+</div>
+
+<!-- LOG -->
+<div class="view" id="view-log">
+  <div class="section-head">
+    <div class="section-title">📖 play log</div>
+    <button class="btn" onclick="openLogPlay()"><i class="ti ti-plus" aria-hidden="true"></i> Log a session</button>
+  </div>
+  <div id="log-list"></div>
+</div>
+
+<!-- USERS -->
+<div class="view" id="view-users">
+  <div class="section-head">
+    <div class="section-title">🐈 your coven</div>
+    <button class="btn pink"><i class="ti ti-plus" aria-hidden="true"></i> Add friend</button>
+  </div>
+  <div id="users-list"></div>
+</div>
+
+<div id="modal-container"></div>
+</div>
+</div>
+
+<script>
+const TYPES = ['strategy','party','coop','euro','horror','word'];
+const TYPE_ICONS = {strategy:'♟️',party:'🎉',coop:'🤝',euro:'🏰',horror:'💀',word:'🔤'};
+const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+
+let state = {
+  games: [
+    {id:1,name:'Root',type:'strategy',minPlayers:2,maxPlayers:4,timeEst:90,bought:'2023-03-12',emoji:'🦊',owner:'Lyra',newGame:false},
+    {id:2,name:'Betrayal at House on the Hill',type:'horror',minPlayers:3,maxPlayers:6,timeEst:60,bought:'2023-08-20',emoji:'🏚️',owner:'Lyra',newGame:false},
+    {id:3,name:'Wingspan',type:'euro',minPlayers:1,maxPlayers:5,timeEst:70,bought:'2022-11-05',emoji:'🦜',owner:'Lyra',newGame:false},
+    {id:4,name:'Codenames',type:'word',minPlayers:4,maxPlayers:8,timeEst:30,bought:'2021-06-15',emoji:'🕵️',owner:'Lyra',newGame:false},
+    {id:5,name:'Gloomhaven',type:'coop',minPlayers:1,maxPlayers:4,timeEst:120,bought:'2023-01-30',emoji:'⚔️',owner:'Lyra',newGame:false},
+    {id:6,name:'Ticket to Ride',type:'strategy',minPlayers:2,maxPlayers:5,timeEst:75,bought:'2020-12-25',emoji:'🚂',owner:'Lyra',newGame:false},
+    {id:7,name:'Mysterium',type:'coop',minPlayers:2,maxPlayers:7,timeEst:45,bought:'2024-10-01',emoji:'👻',owner:'Lyra',newGame:true},
+    {id:8,name:'Exploding Kittens',type:'party',minPlayers:2,maxPlayers:5,timeEst:20,bought:'2024-12-15',emoji:'🐱',owner:'Lyra',newGame:true},
+    {id:9,name:'Pandemic',type:'coop',minPlayers:2,maxPlayers:4,timeEst:60,bought:'2022-05-10',emoji:'🦠',owner:'Raven',newGame:false},
+    {id:10,name:'Dixit',type:'party',minPlayers:3,maxPlayers:8,timeEst:40,bought:'2023-07-18',emoji:'🎨',owner:'Raven',newGame:false},
+    {id:11,name:'Spirit Island',type:'strategy',minPlayers:1,maxPlayers:4,timeEst:120,bought:'2025-02-01',emoji:'🌊',owner:'Crow',newGame:true},
+  ],
+  playLog: [
+    {id:1,gameId:2,gameName:'Betrayal at House on the Hill',date:'2025-04-12',players:[{name:'Lyra',rating:5},{name:'Raven',rating:4},{name:'Crow',rating:5}],notes:'Amazing haunting reveal!'},
+    {id:2,gameId:3,gameName:'Wingspan',date:'2025-03-28',players:[{name:'Lyra',rating:4},{name:'Raven',rating:5}],notes:''},
+    {id:3,gameId:4,gameName:'Codenames',date:'2025-05-01',players:[{name:'Lyra',rating:3},{name:'Raven',rating:4},{name:'Crow',rating:3},{name:'Moth',rating:4}],notes:'Close game'},
+    {id:4,gameId:1,gameName:'Root',date:'2025-02-14',players:[{name:'Lyra',rating:5},{name:'Crow',rating:4}],notes:''},
+  ],
+  users: [
+    {id:1,name:'Lyra',emoji:'🐈',color:'#b48cff',games:[1,2,3,4,5,6,7,8]},
+    {id:2,name:'Raven',emoji:'🦅',color:'#ff7ec7',games:[9,10,4]},
+    {id:3,name:'Crow',emoji:'🐦‍⬛',color:'#5dcaa5',games:[11,1,4]},
+    {id:4,name:'Moth',emoji:'🦋',color:'#fac775',games:[4,10]},
+  ],
+  nights: [
+    {id:1,date:'2025-06-07',name:'Summer Spook Night',attendees:['Lyra','Raven','Crow'],venue:"Lyra's place",calendarSent:true},
+  ],
+  nextId: 20,
+};
+
+function getLastPlayed(id) {
+  const entries = state.playLog.filter(l=>l.gameId===id).sort((a,b)=>new Date(b.date)-new Date(a.date));
+  return entries.length ? entries[0] : null;
+}
+function avgRating(id) {
+  const all = state.playLog.filter(l=>l.gameId===id).flatMap(l=>l.players.map(p=>p.rating));
+  if(!all.length) return null;
+  return (all.reduce((a,b)=>a+b,0)/all.length).toFixed(1);
+}
+
+function renderGames() {
+  const search = (document.getElementById('search-input')||{value:''}).value.toLowerCase();
+  const typeF = (document.getElementById('filter-type')||{value:''}).value;
+  let games = state.games.filter(g => g.name.toLowerCase().includes(search) && (!typeF || g.type===typeF));
+  const grid = document.getElementById('games-grid');
+  if(!grid) return;
+  if(!games.length) { grid.innerHTML='<div class="empty-state">no games found in your grimoire</div>'; return; }
+
+  grid.innerHTML = games.map((g, idx) => {
+    const lp = getLastPlayed(g.id);
+    const rating = avgRating(g.id);
+    const stars = rating
+      ? Array.from({length:5},(_,i)=>`<span class="star${i<Math.round(rating)?' on':''}"">★</span>`).join('')
+      : '';
+    const lastTxt = g.newGame ? 'fresh out the box' : lp ? `last played ${lp.date.slice(0,7)}` : 'dust gathering...';
+    const neverBadge = (!lp && !g.newGame) ? `<div class="never-badge">never played</div>` : '';
+
+    return `<div class="game-card" onclick="openGameDetail(${g.id})">
+      ${g.newGame ? '<div class="new-badge">New</div>' : ''}
+      <div class="card-header-strip">
+        <span class="card-num">${ROMAN[idx] || (idx+1)}</span>
+        <span class="card-type-icon">${TYPE_ICONS[g.type]||'🎲'}</span>
+      </div>
+      <div class="card-art">
+        <span class="card-emoji">${g.emoji}</span>
+        <div class="art-rule"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${g.name}</div>
+        <div class="card-type-label tag tag-${g.type}">${g.type}</div>
+        ${neverBadge}
+        <div class="card-meta-row">
+          <span class="meta-chip">👥 ${g.minPlayers}–${g.maxPlayers}</span>
+          <span class="meta-chip">⏱ ~${g.timeEst}m</span>
+        </div>
+        <div class="card-footer-inner">
+          <span class="last-played-txt">${lastTxt}</span>
+          <div class="star-row">${stars}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function runSuggestion() {
+  const players = parseInt(document.getElementById('filt-players').value);
+  const time = parseInt(document.getElementById('filt-time').value);
+  const genre = document.getElementById('filt-genre').value;
+  const lib = document.getElementById('filt-library').value;
+  let pool = lib==='mine' ? state.games.filter(g=>g.owner==='Lyra') : state.games;
+  pool = pool.filter(g => players>=g.minPlayers && players<=g.maxPlayers && g.timeEst<=time && (!genre||g.type===genre));
+  pool = pool.map(g => {
+    const lp = getLastPlayed(g.id);
+    const daysSince = lp ? (Date.now()-new Date(lp.date))/(1000*86400) : 9999;
+    const avgR = avgRating(g.id);
+    let score = 50;
+    if(daysSince>90) score+=20; else if(daysSince>30) score+=10;
+    if(g.newGame) score+=25;
+    if(avgR&&avgR>=4) score+=15;
+    if(!lp) score+=15;
+    return {...g,score,daysSince,avgR,lp};
+  }).sort((a,b)=>b.score-a.score).slice(0,4);
+
+  const out = document.getElementById('suggestions-out');
+  if(!pool.length) { out.innerHTML='<div class="empty-state">no games match — try loosening the filters</div>'; return; }
+
+  out.innerHTML = `<div class="suggestions-label">suggested for tonight</div>` +
+    pool.map((g,i) => {
+      const reasons = [];
+      if(g.newGame) reasons.push('✨ brand new');
+      else if(!g.lp) reasons.push('🕸️ never played');
+      else if(g.daysSince>90) reasons.push(`last played ${Math.round(g.daysSince)}d ago`);
+      else reasons.push(`last played ${g.lp.date.slice(0,7)}`);
+      if(g.avgR) reasons.push(`avg ★ ${g.avgR}`);
+      return `<div class="suggestion-card">
+        <div class="sug-rank">${ROMAN[i]}</div>
+        <div class="sug-emoji">${g.emoji}</div>
+        <div class="sug-info">
+          <div class="sug-name">${g.name} ${g.newGame?'<span style="font-size:10px;background:rgba(255,126,199,0.12);border:1px solid rgba(255,126,199,0.3);color:var(--g-pink);padding:1px 7px;border-radius:20px;font-family:Crimson Text,serif;font-style:italic;">new</span>':''}</div>
+          <div class="sug-why">${reasons.join(' · ')} · ${g.minPlayers}–${g.maxPlayers}p · ~${g.timeEst}m</div>
+        </div>
+        <div class="sug-score"><span class="sug-score-num">${g.score}</span><span class="sug-score-lbl">match</span></div>
+      </div>`;
+    }).join('');
+}
+
+function renderLog() {
+  const list = document.getElementById('log-list');
+  if(!list) return;
+  const sorted = [...state.playLog].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!sorted.length) { list.innerHTML='<div class="empty-state">no sessions logged yet</div>'; return; }
+  const ratingEmoji = r => r>=5?'😍':r>=4?'😊':r>=3?'😐':'😕';
+  list.innerHTML = sorted.map(entry => {
+    const pills = entry.players.map(p=>`<span class="player-pill">${p.name} ${ratingEmoji(p.rating)}</span>`).join('');
+    return `<div class="log-entry">
+      <div class="log-header"><div class="log-game">${entry.gameName}</div><div class="log-date">${entry.date}</div></div>
+      <div class="log-players">${pills}</div>
+      ${entry.notes?`<div class="log-note">"${entry.notes}"</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderNights() {
+  const list = document.getElementById('nights-list');
+  if(!list) return;
+  if(!state.nights.length) { list.innerHTML='<div class="empty-state">no nights planned yet</div>'; return; }
+  list.innerHTML = state.nights.map(n=>`<div class="night-card">
+    <div class="night-name">${n.name}</div>
+    <div class="night-meta">${n.date} · ${n.venue}</div>
+    <div class="attendee-chips">${n.attendees.map(a=>`<span class="attendee-chip">${a}</span>`).join('')}</div>
+    ${n.calendarSent?`<div class="invite-row">✓ calendar invites sent</div>`:''}
+  </div>`).join('');
+}
+
+function renderUsers() {
+  const list = document.getElementById('users-list');
+  if(!list) return;
+  list.innerHTML = state.users.map(u => {
+    const sessions = state.playLog.filter(l=>l.players.some(p=>p.name===u.name)).length;
+    const ownedChips = state.games.filter(g=>u.games.includes(g.id)).map(g=>`<span class="meta-chip">${g.emoji} ${g.name}</span>`).join('');
+    return `<div class="user-card">
+      <div class="user-avatar-lg" style="background:${u.color}18;color:${u.color};">${u.emoji}</div>
+      <div style="flex:1;">
+        <div class="user-name">${u.name}</div>
+        <div class="user-stats">${u.games.length} games · ${sessions} sessions</div>
+        <div class="user-game-chips">${ownedChips}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  if(name==='library') renderGames();
+  if(name==='log') renderLog();
+  if(name==='users') renderUsers();
+  if(name==='nights') renderNights();
+  if(name==='find') document.getElementById('suggestions-out').innerHTML='';
+}
+
+function closeModal() { document.getElementById('modal-container').innerHTML=''; }
+
+function openGameDetail(id) {
+  const g = state.games.find(x=>x.id===id);
+  if(!g) return;
+  const lp = getLastPlayed(id);
+  const rating = avgRating(id);
+  const sessions = state.playLog.filter(l=>l.gameId===id);
+  document.getElementById('modal-container').innerHTML = `
+  <div class="modal-bg" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <div style="display:flex;gap:14px;align-items:center;margin-bottom:16px;">
+      <span style="font-size:42px;">${g.emoji}</span>
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:3px;">${g.name}</div>
+        <div style="font-size:13px;font-style:italic;color:var(--g-muted);">${g.type} · ${g.minPlayers}–${g.maxPlayers} players · ~${g.timeEst}m</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;">
+      <div style="background:var(--g-surface2);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--g-purple);">${sessions.length}</div>
+        <div style="font-size:11px;font-style:italic;color:var(--g-muted);">sessions</div>
+      </div>
+      <div style="background:var(--g-surface2);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--g-amber);">${rating||'—'}</div>
+        <div style="font-size:11px;font-style:italic;color:var(--g-muted);">avg rating</div>
+      </div>
+      <div style="background:var(--g-surface2);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-size:13px;font-weight:500;color:var(--g-teal);margin-top:4px;">${lp?lp.date.slice(0,7):'never'}</div>
+        <div style="font-size:11px;font-style:italic;color:var(--g-muted);">last played</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">close</button>
+      <button class="btn teal" onclick="closeModal();openLogPlay(${id})">+ log a session</button>
+    </div>
+  </div>
+  </div>`;
+}
+
+function openAddGame() {
+  document.getElementById('modal-container').innerHTML = `
+  <div class="modal-bg" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <div class="modal-title">🎲 add a game</div>
+    <div class="field"><span class="label">game name</span><input class="input" id="m-name" placeholder="e.g. Gloom" /></div>
+    <div class="row2">
+      <div class="field"><span class="label">type</span>
+        <select class="input" id="m-type">${TYPES.map(t=>`<option value="${t}">${t}</option>`).join('')}</select>
+      </div>
+      <div class="field"><span class="label">emoji icon</span><input class="input" id="m-emoji" placeholder="🎲" style="font-size:18px;" /></div>
+    </div>
+    <div class="row2">
+      <div class="field"><span class="label">min players</span><input class="input" id="m-min" type="number" min="1" max="10" value="2"/></div>
+      <div class="field"><span class="label">max players</span><input class="input" id="m-max" type="number" min="1" max="20" value="4"/></div>
+    </div>
+    <div class="field"><span class="label">estimated time (minutes)</span><input class="input" id="m-time" type="number" value="60"/></div>
+    <div class="field"><span class="label">date purchased</span><input class="input" id="m-date" type="date" value="${new Date().toISOString().slice(0,10)}"/></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">cancel</button>
+      <button class="btn" onclick="saveGame()" style="background:rgba(180,140,255,0.15);border-color:var(--g-purple);">add game</button>
+    </div>
+  </div>
+  </div>`;
+}
+
+function saveGame() {
+  const name = document.getElementById('m-name').value.trim();
+  if(!name) return;
+  state.games.push({
+    id:state.nextId++,name,
+    type:document.getElementById('m-type').value,
+    emoji:document.getElementById('m-emoji').value||'🎲',
+    minPlayers:parseInt(document.getElementById('m-min').value),
+    maxPlayers:parseInt(document.getElementById('m-max').value),
+    timeEst:parseInt(document.getElementById('m-time').value),
+    bought:document.getElementById('m-date').value,
+    owner:'Lyra',newGame:true,
+  });
+  closeModal(); renderGames();
+}
+
+function openLogPlay(preGameId) {
+  const options = state.games.map(g=>`<option value="${g.id}" ${preGameId===g.id?'selected':''}>${g.emoji} ${g.name}</option>`).join('');
+  const players = state.users.map(u=>`<label style="display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;font-size:14px;"><input type="checkbox" id="lp-${u.id}" style="width:auto;" ${u.name==='Lyra'?'checked':''} />${u.emoji} ${u.name}</label>`).join('');
+  document.getElementById('modal-container').innerHTML = `
+  <div class="modal-bg" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <div class="modal-title">📖 log a session</div>
+    <div class="field"><span class="label">game</span><select class="input" id="log-game">${options}</select></div>
+    <div class="field"><span class="label">date</span><input class="input" id="log-date" type="date" value="${new Date().toISOString().slice(0,10)}"/></div>
+    <div class="field"><span class="label">who played?</span>${players}</div>
+    <div class="field"><span class="label">your rating</span>
+      <div style="display:flex;gap:7px;margin-top:4px;">
+        ${[1,2,3,4,5].map(n=>`<button onclick="setRating(${n})" id="rate-${n}" style="background:var(--g-surface2);border:1px solid var(--g-border);border-radius:6px;padding:6px 10px;color:var(--g-muted);cursor:pointer;font-size:14px;">${n}★</button>`).join('')}
+      </div>
+    </div>
+    <div class="field"><span class="label">notes</span><input class="input" id="log-notes" placeholder="any memorable moments..." /></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">cancel</button>
+      <button class="btn teal" onclick="saveLog()">save</button>
+    </div>
+  </div>
+  </div>`;
+  window._selectedRating = 4; setRating(4);
+}
+
+function setRating(n) {
+  window._selectedRating = n;
+  [1,2,3,4,5].forEach(i => {
+    const b = document.getElementById('rate-'+i);
+    if(b) b.style.color = i<=n ? 'var(--g-amber)' : 'var(--g-muted)';
+  });
+}
+
+function saveLog() {
+  const gameId = parseInt(document.getElementById('log-game').value);
+  const game = state.games.find(g=>g.id===gameId);
+  const players = state.users.filter(u=>document.getElementById('lp-'+u.id)?.checked).map(u=>({name:u.name,rating:window._selectedRating||3}));
+  if(!players.length) return;
+  state.playLog.push({id:state.nextId++,gameId,gameName:game.name,date:document.getElementById('log-date').value,players,notes:document.getElementById('log-notes').value});
+  if(game.newGame) game.newGame = false;
+  closeModal(); renderLog();
+}
+
+function openPlanNight() {
+  const attendees = state.users.map(u=>`<span class="attendee-chip" id="att-${u.id}" onclick="toggleAtt(${u.id})" style="cursor:pointer;opacity:0.45;">${u.emoji} ${u.name}</span>`).join('');
+  document.getElementById('modal-container').innerHTML = `
+  <div class="modal-bg" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <div class="modal-title">🌙 plan a game night</div>
+    <div class="field"><span class="label">night name</span><input class="input" id="nn-name" placeholder="e.g. Friday Fright Night"/></div>
+    <div class="row2">
+      <div class="field"><span class="label">date</span><input class="input" id="nn-date" type="date" value="${new Date().toISOString().slice(0,10)}"/></div>
+      <div class="field"><span class="label">venue</span><input class="input" id="nn-venue" placeholder="your place"/></div>
+    </div>
+    <div class="field"><span class="label">who's coming? (tap to select)</span>
+      <div class="attendee-chips" style="margin-top:8px;">${attendees}</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">cancel</button>
+      <button class="btn" onclick="saveNight()" style="background:rgba(180,140,255,0.15);border-color:var(--g-purple);">plan it!</button>
+    </div>
+  </div>
+  </div>`;
+  window._selAtt = new Set(['Lyra']); updateAttChips();
+}
+
+function toggleAtt(uid) {
+  const u = state.users.find(x=>x.id===uid);
+  if(!u) return;
+  if(window._selAtt.has(u.name)) window._selAtt.delete(u.name); else window._selAtt.add(u.name);
+  updateAttChips();
+}
+function updateAttChips() {
+  state.users.forEach(u => {
+    const el = document.getElementById('att-'+u.id);
+    if(el) el.style.opacity = window._selAtt.has(u.name) ? '1' : '0.4';
+  });
+}
+function saveNight() {
+  const name = document.getElementById('nn-name').value.trim()||'Game Night';
+  state.nights.push({id:state.nextId++,name,date:document.getElementById('nn-date').value,venue:document.getElementById('nn-venue').value||'TBD',attendees:[...window._selAtt],calendarSent:true});
+  closeModal(); renderNights();
+}
+
+renderGames();
+</script>
