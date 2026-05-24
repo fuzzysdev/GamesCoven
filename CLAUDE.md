@@ -1,54 +1,84 @@
-# Grimoire & Games — Project Brief
-
-## What we're building
-A gothic-cute board game library and game night planner app. Firebase + React + Vite.
+# Grimoire & Games — Developer Reference
 
 ## Stack
-- Frontend: React + Vite, deployed to Firebase Hosting
-- Auth: Firebase Authentication (Google sign-in + email/password)
-- Database: Firestore
-- Hosting: Firebase Hosting
-- Calendar invites: generate .ics files (no Google Calendar API needed for MVP)
+React + Vite · Firebase Hosting · Firestore · Firebase Auth (Google + email/password)
 
-## Theme / aesthetic
-Gothic-cute. Dark purple/black backgrounds, pink and teal accents, cat and unicorn emoji throughout.
-Font: system sans-serif. No gradients or glow effects — flat and clean.
-Color palette: bg #0e0a1a, surface #1a1128, purple #b48cff, pink #ff7ec7, teal #5dcaa5, amber #fac775.
+## Live URL
+https://grimoire-games.web.app  (project ID: `grimoire-games`)
 
-## Core features (build in this order)
-1. Auth — Google sign-in, user profiles stored in Firestore
-2. Game library — each user owns games, stored under /users/{uid}/games
-3. Add/edit game — name, type (strategy/party/coop/euro/horror/word), min/max players, time estimate, date purchased, emoji icon
-4. Find games tonight — filter by player count, time available, game type; pull from all friends' libraries; score and rank suggestions (boost: new games, long since played, high rated)
-5. Play log — log a session: which game, date, who played, rating per player (1-5), notes
-6. Game nights — plan a night: name, date, time, venue, attendees; generate a .ics calendar file for download
-7. Friends/coven — add friends by email, see their library, include their games in suggestions
+## Deploy
+Use the `/deploy-firebase` slash command. It runs `npm run build`, then deploys via the Firebase MCP tool (`hosting,firestore`), and polls until done.
+
+## Theme
+Gothic-cute. Dark purple/black bg, pink + teal accents.
+Palette: bg `#0e0a1a`, surface `#1a1128`, purple `#b48cff`, pink `#ff7ec7`, teal `#5dcaa5`, amber `#fac775`.
+CSS variables are in `src/base.css`.
+
+## File map
+
+### Source
+| Path | Purpose |
+|------|---------|
+| `src/main.jsx` | Entry — imports 5 CSS files, mounts App |
+| `src/App.jsx` | Router, nav, auth gate, unicorn easter egg |
+| `src/firebase.js` | Firebase app init |
+| `src/context/AuthContext.jsx` | `useAuth()` hook |
+| `src/utils/constants.js` | `TYPES`, `TYPE_ICONS`, `GAME_EMOJI` |
+| `src/utils/scoring.js` | `scoreGame()` — suggestion scoring logic |
+| `src/utils/bgg.js` | `searchBGG()`, `fetchBGGGame()` — BGG API helpers |
+| `src/utils/mechanisms.js` | `MECHANISMS` array |
+| `src/components/GameCard.jsx` | `GameCard` (default), `TypeTag`, `StarRow`, `GameIcon` |
+| `src/components/GameModals.jsx` | `AddGameModal`, `EditGameModal`, `GameDetailModal`, `BGGSearch` |
+| `src/components/MechanismPicker.jsx` | Mechanism multi-select component |
+| `src/components/UnicornEasterEgg.jsx` | Easter egg overlay |
+| `src/pages/Library.jsx` | Game library — Firestore listeners + grid render |
+| `src/pages/FindGames.jsx` | Suggestion engine UI |
+| `src/pages/PlayLog.jsx` | Session log list + log modal |
+| `src/pages/Nights.jsx` | Game nights list + plan modal |
+| `src/pages/GameNightPage.jsx` | Shareable night page (`/night/:nightId`) — RSVP + poll |
+| `src/pages/Friends.jsx` | Coven/friends management |
+| `src/pages/AuthPage.jsx` | Sign-in / sign-up |
+
+### CSS (all imported in main.jsx)
+| File | Contents |
+|------|---------|
+| `src/base.css` | Variables, reset, layout, header, nav, buttons, inputs, auth, loading |
+| `src/library.css` | Game cards, type tags, badges, stars, expansions |
+| `src/modals.css` | Modal dialogs, form fields, emoji/mechanism pickers, BGG search, stats |
+| `src/pages.css` | Find Games, Play Log, Game Nights, Friends, Game Night page |
+| `src/fx.css` | Unicorn easter egg animation |
 
 ## Data model (Firestore)
-/users/{uid} — { displayName, email, emoji, color }
-/users/{uid}/games/{gameId} — { name, type, emoji, minPlayers, maxPlayers, timeEst, boughtDate, isNew, ownerId }
-/users/{uid}/playLog/{logId} — { gameId, gameName, date, players: [{uid, name, rating}], notes }
-/gameNights/{nightId} — { name, date, time, venue, hostUid, attendeeUids[], createdAt }
-/friendships/{uid} — { friends: [uid] } (or subcollection)
+```
+/users/{uid}                    — { displayName, email, emoji, color }
+/users/{uid}/games/{gameId}     — { name, type, emoji, minPlayers, maxPlayers,
+                                    timeEst, boughtDate, isNew, ownerId,
+                                    bggImageUrl?, bggId?, bggUrl?,
+                                    mechanisms[], baseGameId? }
+/users/{uid}/playLog/{logId}    — { gameId, gameName, date, players: [{uid,name,rating}], notes }
+/gameNights/{nightId}           — { name, date, time, venue, hostUid,
+                                    attendeeUids[], attendeeNames[],
+                                    rsvps: {uid: 'yes'|'no'},
+                                    pollOpen: bool,
+                                    pollGames: [{id,name,emoji,bggImageUrl,
+                                                 ownerId,ownerName,
+                                                 isWriteIn,votes:[uid]}] }
+/friendships/{uid}              — { friends: [uid] }
+```
+
+## Key patterns
+
+**Expansions** — games with `baseGameId` are expansions. Library groups them below their base card. `AddGameModal` accepts a `baseGame` prop to set `baseGameId` on save.
+
+**Game night poll** — generated at creation time by scoring all attendees' libraries (base 50 + isNew +25 + random tiebreaker), deduplicating by name, picking top 5. Voting toggles the user's uid in each game's `votes` array (whole array rewritten on update).
+
+**RSVP** — dot-notation Firestore update: `{ ['rsvps.' + uid]: answer }` so RSVPs don't overwrite each other.
+
+**Suggestion scoring** — `src/utils/scoring.js`: base 50, +25 new, +15 never played, +20 if >90d since played, +10 if >30d, +15 if avg rating >= 4.
+
+**Easter egg** — Konami code (`↑↑↓↓←→←→BA`) or random timer (3–8 min) triggers `UnicornEasterEgg`. State lives in `App.jsx`.
 
 ## Firestore security rules
-- Users can only read/write their own /users/{uid} documents and subcollections
-- gameNights readable by all attendees, writable by host
-- friendships readable/writable by the user
-
-## What a "new game" means
-isNew: true when added. Set to false the first time a play session is logged for that game.
-
-## Suggestion scoring logic
-Base score 50. Add:
-- +25 if isNew
-- +15 if never played
-- +20 if last played > 90 days ago, +10 if > 30 days
-- +15 if avg rating >= 4
-Sort descending, return top 4.
-
-## Notes
-- Use Firebase plugin via MCP — create the project, enable Firestore + Auth, deploy
-- .ics generation should be done client-side with a small helper function, no external library needed
-- Keep components in /src/components, pages in /src/pages
-- Use CSS variables for theming, no CSS framework needed
+- Users: read/write own `/users/{uid}` and subcollections only
+- `gameNights`: readable by any attendee (`attendeeUids` array); updatable by any attendee (for RSVP/voting); deletable by host only
+- `friendships`: readable/writable by the owning user

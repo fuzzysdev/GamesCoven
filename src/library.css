@@ -1,0 +1,211 @@
+/* Library page — game grid, cards, type tags, badges, expansions */
+
+.toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+
+.games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 14px; }
+
+/* Tarot-style game cards */
+.game-card {
+  background: var(--g-card);
+  border: 1px solid var(--g-border);
+  border-radius: 10px 10px 6px 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+.game-card:hover {
+  border-color: var(--g-border-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.5), 0 0 16px rgba(180,140,255,0.06);
+}
+
+.card-header-strip {
+  background: rgba(180,140,255,0.06);
+  border-bottom: 1px solid var(--g-border);
+  padding: 7px 12px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-shrink: 0;
+}
+.card-type-icon { font-size: 13px; opacity: 0.55; }
+
+.card-art {
+  padding: 16px 12px 10px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.card-emoji { font-size: 38px; display: block; margin-bottom: 8px; line-height: 1; }
+.card-img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  display: block;
+}
+.art-rule {
+  width: 36px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(180,140,255,0.35), transparent);
+  margin: 0 auto;
+}
+
+.card-body { padding: 10px 14px 14px; flex: 1; display: flex; flex-direction: column; }
+.card-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--g-text);
+  text-align: center;
+  margin-bottom: 3px;
+  line-height: 1.3;
+}
+.card-type-label {
+  font-size: 11px;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+.card-meta-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.card-footer-inner {
+  border-top: 1px solid rgba(180,140,255,0.08);
+  padding-top: 8px;
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.last-played-txt { font-size: 11px; font-style: italic; color: var(--g-muted); opacity: 0.7; }
+
+/* Badges */
+.new-badge {
+  position: absolute;
+  top: 10px; right: -16px;
+  background: var(--g-pink);
+  color: #1a0828;
+  font-family: 'Crimson Text', serif;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 20px;
+  transform: rotate(35deg);
+  letter-spacing: 0.5px;
+  z-index: 1;
+}
+.never-badge {
+  background: rgba(250,199,117,0.10);
+  border: 1px solid rgba(250,199,117,0.28);
+  color: var(--g-amber);
+  font-size: 10px;
+  font-style: italic;
+  padding: 2px 9px;
+  border-radius: 20px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+/* Chips */
+.meta-chip {
+  background: var(--g-surface2);
+  border: 1px solid var(--g-border);
+  border-radius: 20px;
+  padding: 2px 9px;
+  font-size: 11px;
+  color: var(--g-muted);
+  display: flex; align-items: center; gap: 4px;
+}
+
+/* Type tags */
+.type-tag { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+.tag-strategy { color: var(--g-purple); }
+.tag-party { color: var(--g-pink); }
+.tag-coop { color: var(--g-teal); }
+.tag-euro { color: var(--g-amber); }
+.tag-horror { color: #f08080; }
+.tag-word { color: #82c8ff; }
+.tag-fantasy { color: #c084fc; }
+.tag-farming { color: #86efac; }
+
+/* Stars */
+.star-row { display: flex; gap: 2px; }
+.star { font-size: 12px; color: var(--g-border); }
+.star.on { color: var(--g-amber); }
+
+/* Game images */
+.game-img { width: 44px; height: 44px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.game-img-lg { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; flex-shrink: 0; }
+
+/* Expansions */
+.game-group-slot { display: flex; flex-direction: column; }
+
+.expansion-add-btn {
+  display: flex; align-items: center; gap: 4px;
+  margin-top: 8px;
+  width: 100%;
+  background: transparent;
+  border: 1px dashed rgba(180,140,255,0.2);
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: var(--g-muted);
+  font-family: 'Crimson Text', serif;
+  font-size: 11px;
+  cursor: pointer;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.expansion-add-btn:hover {
+  border-color: rgba(180,140,255,0.5);
+  color: var(--g-purple);
+  background: rgba(180,140,255,0.06);
+}
+
+.expansion-list {
+  margin-top: 4px;
+  border: 1px solid var(--g-border);
+  border-radius: 0 0 8px 8px;
+  border-top: none;
+  background: rgba(180,140,255,0.03);
+  overflow: hidden;
+}
+.expansion-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-top: 1px solid var(--g-border);
+}
+.expansion-row:hover { background: rgba(180,140,255,0.08); }
+.exp-chevron { color: var(--g-muted); font-size: 11px; flex-shrink: 0; }
+.exp-icon { font-size: 13px; flex-shrink: 0; }
+.exp-name { flex: 1; color: var(--g-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.exp-new {
+  background: rgba(255,126,199,0.15);
+  border: 1px solid rgba(255,126,199,0.35);
+  color: var(--g-pink);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.expansion-banner {
+  background: rgba(180,140,255,0.08);
+  border: 1px solid rgba(180,140,255,0.25);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--g-muted);
+  margin-bottom: 14px;
+}
+.expansion-banner strong { color: var(--g-purple); }

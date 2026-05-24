@@ -1,0 +1,244 @@
+/* Page-specific styles: Find Games, Play Log, Game Nights, Friends, Game Night shareable page */
+
+/* Find Games */
+.finder-panel {
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+.finder-title { font-size: 14px; color: var(--g-muted); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+.filter-group { display: flex; flex-direction: column; gap: 5px; }
+
+.suggestions-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px; font-weight: 700; color: var(--g-purple);
+  margin-bottom: 14px;
+}
+.suggestion-card {
+  background: var(--g-card);
+  border: 1px solid var(--g-border);
+  border-left: 3px solid var(--g-purple);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 16px;
+  transition: border-color 0.15s;
+}
+.suggestion-card:hover { border-color: var(--g-border-hover); }
+.suggestion-card:nth-child(1) { border-left-color: var(--g-pink); }
+.suggestion-card:nth-child(2) { border-left-color: var(--g-purple); }
+.suggestion-card:nth-child(3) { border-left-color: var(--g-teal); }
+.suggestion-card:nth-child(4) { border-left-color: var(--g-amber); }
+.sug-rank {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 26px; font-weight: 700;
+  color: rgba(180,140,255,0.18);
+  min-width: 28px; line-height: 1;
+}
+.sug-emoji { font-size: 28px; }
+.sug-info { flex: 1; }
+.sug-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+.sug-why { font-size: 13px; font-style: italic; color: var(--g-muted); }
+.sug-score { background: var(--g-surface2); border: 1px solid var(--g-border); border-radius: 8px; padding: 6px 12px; text-align: center; }
+.sug-score-num { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--g-teal); display: block; }
+.sug-score-lbl { font-size: 10px; font-style: italic; color: var(--g-muted); }
+
+/* Play Log */
+.log-entry {
+  background: var(--g-card);
+  border: 1px solid var(--g-border);
+  border-radius: 12px;
+  padding: 14px; margin-bottom: 10px;
+}
+.log-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.log-game { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; }
+.log-date { font-size: 12px; font-style: italic; color: var(--g-muted); }
+.log-players { display: flex; gap: 6px; flex-wrap: wrap; }
+.player-pill {
+  background: var(--g-surface2);
+  border: 1px solid var(--g-border);
+  border-radius: 20px;
+  padding: 3px 10px; font-size: 12px;
+  display: flex; align-items: center; gap: 5px;
+}
+.rating-liked { color: var(--g-teal); }
+.rating-meh { color: var(--g-amber); }
+.rating-bad { color: #f08080; }
+.log-notes { font-size: 13px; color: var(--g-muted); margin-top: 8px; font-style: italic; opacity: 0.75; }
+
+/* Game Nights list */
+.section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.section-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--g-text); }
+
+.night-card {
+  background: var(--g-card);
+  border: 1px solid var(--g-border);
+  border-radius: 12px;
+  padding: 18px; margin-bottom: 12px;
+}
+.night-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; margin-bottom: 3px; }
+.night-meta { font-size: 13px; font-style: italic; color: var(--g-muted); margin-bottom: 12px; }
+.attendee-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.attendee-chip {
+  background: var(--g-surface2);
+  border: 1px solid rgba(180,140,255,0.25);
+  border-radius: 20px;
+  padding: 4px 10px; font-size: 12px;
+  color: var(--g-muted); cursor: pointer; transition: all 0.15s;
+}
+.attendee-chip.selected {
+  background: rgba(180,140,255,0.15);
+  border-color: var(--g-purple);
+  color: var(--g-purple);
+}
+.attendee-chip.rsvp-yes { background: rgba(93,202,165,0.1); border-color: rgba(93,202,165,0.4); color: var(--g-teal); }
+.attendee-chip.rsvp-no  { background: rgba(240,128,128,0.1); border-color: rgba(240,128,128,0.4); color: #f08080; }
+
+.invite-info {
+  background: rgba(93,202,165,0.07);
+  border: 1px solid rgba(93,202,165,0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px; color: var(--g-teal);
+  display: flex; align-items: center; gap: 8px;
+}
+
+.night-stats-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; }
+.night-stat { font-size: 12px; font-style: italic; color: var(--g-muted); }
+
+/* Friends */
+.user-card {
+  background: var(--g-card);
+  border: 1px solid var(--g-border);
+  border-radius: 12px;
+  padding: 16px; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 14px;
+}
+.user-avatar-lg {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.user-info { flex: 1; }
+.user-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+.user-stats { font-size: 13px; font-style: italic; color: var(--g-muted); }
+.user-games { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+
+/* Game Night shareable page */
+.gn-page { min-height: 100vh; background: var(--g-bg); color: var(--g-text); }
+
+.gn-topbar {
+  background: var(--g-surface);
+  border-bottom: 1px solid var(--g-border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.gn-back { font-size: 13px; color: var(--g-muted); text-decoration: none; font-style: italic; }
+.gn-back:hover { color: var(--g-purple); }
+
+.gn-content {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gn-event-card {
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-radius: 14px;
+  padding: 20px 22px;
+}
+.gn-event-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--g-purple);
+  margin-bottom: 6px;
+}
+.gn-event-meta { font-size: 13px; font-style: italic; color: var(--g-muted); margin-bottom: 16px; }
+.gn-rsvp-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.gn-rsvp-label { font-size: 13px; color: var(--g-muted); font-style: italic; }
+
+.gn-poll-card {
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-radius: 14px;
+  padding: 20px 22px;
+}
+.gn-poll-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.gn-poll-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--g-text); }
+
+.poll-badge { font-size: 11px; font-style: italic; padding: 3px 10px; border-radius: 20px; }
+.poll-open  { background: rgba(93,202,165,0.12); border: 1px solid rgba(93,202,165,0.35); color: var(--g-teal); }
+.poll-closed { background: rgba(180,140,255,0.08); border: 1px solid rgba(180,140,255,0.25); color: var(--g-muted); }
+
+.poll-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--g-border);
+  transition: background 0.15s;
+}
+.poll-row-voted { background: rgba(180,140,255,0.04); border-radius: 8px; padding: 12px 8px; margin: 0 -8px; }
+.poll-row-icon { width: 40px; flex-shrink: 0; text-align: center; }
+.poll-row-img  { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; display: block; }
+.poll-row-info { flex: 1; min-width: 0; }
+.poll-row-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.poll-row-owner { font-size: 11px; font-style: italic; color: var(--g-muted); margin-bottom: 5px; }
+.poll-voter-row { display: flex; gap: 4px; flex-wrap: wrap; }
+.poll-voter-chip {
+  background: rgba(180,140,255,0.1);
+  border: 1px solid rgba(180,140,255,0.25);
+  border-radius: 20px;
+  padding: 1px 7px;
+  font-size: 11px;
+  color: var(--g-purple);
+}
+.poll-row-right { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
+.poll-vote-count {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--g-muted);
+  line-height: 1;
+}
+.poll-vote-btn {
+  font-size: 22px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--g-muted);
+  line-height: 1;
+  transition: color 0.15s, transform 0.1s;
+  padding: 0;
+}
+.poll-vote-btn:hover { color: var(--g-amber); transform: scale(1.2); }
+.poll-vote-btn.voted { color: var(--g-amber); }
+
+.gn-host-controls {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(180,140,255,0.2);
+}
+.gn-host-label {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--g-muted);
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}

@@ -3,6 +3,10 @@
     "firebase": {
       "command": "firebase",
       "args": ["experimental:mcp"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest", "--browser", "chromium"]
     }
   }
 }

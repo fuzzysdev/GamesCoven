@@ -169,7 +169,7 @@ select.input option { background: #1a1128; }
   border-bottom: 1px solid var(--g-border);
   padding: 7px 12px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   flex-shrink: 0;
 }
@@ -277,6 +277,8 @@ select.input option { background: #1a1128; }
 .tag-euro { color: var(--g-amber); }
 .tag-horror { color: #f08080; }
 .tag-word { color: #82c8ff; }
+.tag-fantasy { color: #c084fc; }
+.tag-farming { color: #86efac; }
 
 /* Stars */
 .star-row { display: flex; gap: 2px; }
@@ -666,3 +668,292 @@ select.input option { background: #1a1128; }
 
 /* Password reset success */
 .success-msg { font-size: 12px; color: var(--g-teal); margin-top: 8px; }
+
+/* RSVP chip variants */
+.attendee-chip.rsvp-yes { background: rgba(93,202,165,0.1); border-color: rgba(93,202,165,0.4); color: var(--g-teal); }
+.attendee-chip.rsvp-no  { background: rgba(240,128,128,0.1); border-color: rgba(240,128,128,0.4); color: #f08080; }
+
+/* Night card stats row */
+.night-stats-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; }
+.night-stat { font-size: 12px; font-style: italic; color: var(--g-muted); }
+
+/* Game Night Page */
+.gn-page { min-height: 100vh; background: var(--g-bg); color: var(--g-text); }
+
+.gn-topbar {
+  background: var(--g-surface);
+  border-bottom: 1px solid var(--g-border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.gn-back {
+  font-size: 13px;
+  color: var(--g-muted);
+  text-decoration: none;
+  font-style: italic;
+}
+.gn-back:hover { color: var(--g-purple); }
+
+.gn-content {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gn-event-card {
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-radius: 14px;
+  padding: 20px 22px;
+}
+.gn-event-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--g-purple);
+  margin-bottom: 6px;
+}
+.gn-event-meta {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--g-muted);
+  margin-bottom: 16px;
+}
+.gn-rsvp-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.gn-rsvp-label { font-size: 13px; color: var(--g-muted); font-style: italic; }
+
+.gn-poll-card {
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-radius: 14px;
+  padding: 20px 22px;
+}
+.gn-poll-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.gn-poll-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--g-text);
+}
+.poll-badge {
+  font-size: 11px;
+  font-style: italic;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.poll-open  { background: rgba(93,202,165,0.12); border: 1px solid rgba(93,202,165,0.35); color: var(--g-teal); }
+.poll-closed { background: rgba(180,140,255,0.08); border: 1px solid rgba(180,140,255,0.25); color: var(--g-muted); }
+
+.poll-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--g-border);
+  transition: background 0.15s;
+}
+.poll-row-voted { background: rgba(180,140,255,0.04); border-radius: 8px; padding: 12px 8px; margin: 0 -8px; }
+.poll-row-icon { width: 40px; flex-shrink: 0; text-align: center; }
+.poll-row-img  { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; display: block; }
+.poll-row-info { flex: 1; min-width: 0; }
+.poll-row-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.poll-row-owner { font-size: 11px; font-style: italic; color: var(--g-muted); margin-bottom: 5px; }
+.poll-voter-row { display: flex; gap: 4px; flex-wrap: wrap; }
+.poll-voter-chip {
+  background: rgba(180,140,255,0.1);
+  border: 1px solid rgba(180,140,255,0.25);
+  border-radius: 20px;
+  padding: 1px 7px;
+  font-size: 11px;
+  color: var(--g-purple);
+}
+.poll-row-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.poll-vote-count {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--g-muted);
+  line-height: 1;
+}
+.poll-vote-btn {
+  font-size: 22px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--g-muted);
+  line-height: 1;
+  transition: color 0.15s, transform 0.1s;
+  padding: 0;
+}
+.poll-vote-btn:hover { color: var(--g-amber); transform: scale(1.2); }
+.poll-vote-btn.voted { color: var(--g-amber); }
+
+.gn-host-controls {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(180,140,255,0.2);
+}
+.gn-host-label {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--g-muted);
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Unicorn easter egg */
+.unicorn-stage {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.unicorn-flyer {
+  position: absolute;
+  top: 32%;
+  animation: unicorn-fly 3.8s ease-in-out forwards;
+}
+
+@keyframes unicorn-fly {
+  0%   { transform: translateX(-220px) translateY(0px); }
+  15%  { transform: translateX(15vw)   translateY(-50px); }
+  30%  { transform: translateX(30vw)   translateY(22px); }
+  50%  { transform: translateX(50vw)   translateY(-40px); }
+  68%  { transform: translateX(68vw)   translateY(28px); }
+  84%  { transform: translateX(84vw)   translateY(-18px); }
+  100% { transform: translateX(calc(100vw + 220px)) translateY(8px); }
+}
+
+.unicorn-emoji {
+  font-size: 72px;
+  display: block;
+  transform: scaleX(-1);
+  line-height: 1;
+  filter:
+    drop-shadow(0 0 8px rgba(255,105,180,0.9))
+    drop-shadow(0 0 20px rgba(180,140,255,0.7));
+}
+
+.unicorn-trail-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: var(--color);
+  box-shadow: 0 0 6px var(--color), 0 0 16px var(--color);
+  animation: trail-pulse 0.55s ease-in-out infinite alternate;
+  animation-delay: var(--delay);
+}
+
+@keyframes trail-pulse {
+  from { opacity: 0.25; transform: scale(0.4); }
+  to   { opacity: 1;    transform: scale(1.15); }
+}
+
+.unicorn-star {
+  position: absolute;
+  font-size: 18px;
+  line-height: 1;
+  animation: star-pop 0.7s ease-in-out infinite alternate;
+  animation-delay: var(--delay);
+}
+
+@keyframes star-pop {
+  from { opacity: 0.2; transform: scale(0.5) rotate(-15deg); }
+  to   { opacity: 1;   transform: scale(1.2) rotate(15deg); }
+}
+
+/* Expansions */
+.game-group-slot { display: flex; flex-direction: column; }
+
+.expansion-add-btn {
+  display: flex; align-items: center; gap: 4px;
+  margin-top: 8px;
+  width: 100%;
+  background: transparent;
+  border: 1px dashed rgba(180,140,255,0.2);
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: var(--g-muted);
+  font-family: 'Crimson Text', serif;
+  font-size: 11px;
+  cursor: pointer;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.expansion-add-btn:hover {
+  border-color: rgba(180,140,255,0.5);
+  color: var(--g-purple);
+  background: rgba(180,140,255,0.06);
+}
+
+.expansion-list {
+  margin-top: 4px;
+  border: 1px solid var(--g-border);
+  border-radius: 0 0 8px 8px;
+  border-top: none;
+  background: rgba(180,140,255,0.03);
+  overflow: hidden;
+}
+.expansion-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-top: 1px solid var(--g-border);
+}
+.expansion-row:hover { background: rgba(180,140,255,0.08); }
+.exp-chevron { color: var(--g-muted); font-size: 11px; flex-shrink: 0; }
+.exp-icon { font-size: 13px; flex-shrink: 0; }
+.exp-name { flex: 1; color: var(--g-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.exp-new {
+  background: rgba(255,126,199,0.15);
+  border: 1px solid rgba(255,126,199,0.35);
+  color: var(--g-pink);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.expansion-banner {
+  background: rgba(180,140,255,0.08);
+  border: 1px solid rgba(180,140,255,0.25);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--g-muted);
+  margin-bottom: 14px;
+}
+.expansion-banner strong { color: var(--g-purple); }

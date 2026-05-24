@@ -4,8 +4,8 @@ import { IconWand } from '@tabler/icons-react'
 import { db } from '../firebase'
 import { useAuth } from '../context/AuthContext'
 import { scoreGame } from '../utils/scoring'
+import { TYPES } from '../utils/constants'
 
-const TYPES = ['strategy', 'party', 'coop', 'euro', 'horror', 'word']
 const ROMAN = ['I', 'II', 'III', 'IV']
 
 export default function FindGames() {

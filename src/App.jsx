@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { IconBooks, IconWand, IconMoon, IconNotebook, IconUsers } from '@tabler/icons-react'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import AuthPage from './pages/AuthPage'
@@ -8,6 +9,10 @@ import Nights from './pages/Nights'
 import Log from './pages/Log'
 import Friends from './pages/Friends'
 import ProfileModal from './components/ProfileModal'
+import UnicornEasterEgg from './components/UnicornEasterEgg'
+import GameNightPage from './pages/GameNightPage'
+
+const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a']
 
 const NAV = [
   { id: 'library', label: 'Library', icon: IconBooks },
@@ -21,6 +26,27 @@ function AppShell() {
   const { user, profile, loading, signOut } = useAuth()
   const [view, setView] = useState('library')
   const [showProfile, setShowProfile] = useState(false)
+  const [showUnicorn, setShowUnicorn] = useState(false)
+  const konamiBuffer = useRef([])
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      const buf = [...konamiBuffer.current, e.key].slice(-KONAMI.length)
+      konamiBuffer.current = buf
+      if (buf.join(',') === KONAMI.join(',')) {
+        setShowUnicorn(true)
+        konamiBuffer.current = []
+      }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [])
+
+  useEffect(() => {
+    const delay = (3 + Math.random() * 5) * 60 * 1000
+    const t = setTimeout(() => setShowUnicorn(true), delay)
+    return () => clearTimeout(t)
+  }, [])
 
   if (loading) return <div className="loading-screen">🦄</div>
   if (!user) return <AuthPage />
@@ -71,6 +97,7 @@ function AppShell() {
       </main>
 
       {showProfile && <ProfileModal onClose={() => setShowProfile(false)} />}
+      {showUnicorn && <UnicornEasterEgg onDone={() => setShowUnicorn(false)} />}
     </div>
   )
 }
@@ -78,7 +105,12 @@ function AppShell() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppShell />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/night/:nightId" element={<GameNightPage />} />
+          <Route path="*" element={<AppShell />} />
+        </Routes>
+      </BrowserRouter>
     </AuthProvider>
   )
 }

@@ -10,7 +10,10 @@
       "PowerShell(firebase login:list 2>&1)",
       "mcp__firebase__firebase_list_projects",
       "mcp__firebase__firebase_get_environment",
-      "mcp__firebase__firebase_create_project"
+      "mcp__firebase__firebase_create_project",
+      "mcp__firebase__firebase_deploy",
+      "mcp__firebase__firebase_deploy_status",
+      "Bash(npm run build)"
     ]
   }
 }

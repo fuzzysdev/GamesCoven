@@ -26,4 +26,8 @@ export const MECHANISMS = [
   'Abstract Strategy',
   'Economic / Market',
   'Storytelling / Narrative',
+  'Hand Management',
+  'Layering',
+  'Lose a Turn',
+  'Take That',
 ]

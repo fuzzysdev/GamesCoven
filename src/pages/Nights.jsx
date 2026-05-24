@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import {
   collection, onSnapshot, addDoc, query,
-  where, orderBy, serverTimestamp, doc, getDoc,
+  where, orderBy, serverTimestamp, doc, getDoc, getDocs,
 } from 'firebase/firestore'
-import { IconCalendarPlus, IconX, IconCheck, IconCalendarCheck, IconDownload } from '@tabler/icons-react'
+import { IconCalendarPlus, IconX, IconCheck, IconCalendarCheck, IconDownload, IconClipboard } from '@tabler/icons-react'
 import { db } from '../firebase'
 import { useAuth } from '../context/AuthContext'
 import { downloadICS } from '../utils/ics'
@@ -22,7 +22,7 @@ function PlanNightModal({ onClose, onSave, friends, currentUser, currentProfile 
   ]
 
   const toggle = (uid) => {
-    if (uid === currentUser.uid) return // host always included
+    if (uid === currentUser.uid) return
     setSelected(prev => {
       const next = new Set(prev)
       next.has(uid) ? next.delete(uid) : next.add(uid)
@@ -32,15 +32,16 @@ function PlanNightModal({ onClose, onSave, friends, currentUser, currentProfile 
 
   const save = async () => {
     setBusy(true)
-    const attendeeNames = allPeople.filter(p => selected.has(p.uid)).map(p => p.displayName)
+    const attendeeProfiles = allPeople.filter(p => selected.has(p.uid))
+    const attendeeNames = attendeeProfiles.map(p => p.displayName)
     await onSave({
       name: name.trim() || 'Game Night',
-      date,
-      time,
+      date, time,
       venue: venue.trim() || 'TBD',
       hostUid: currentUser.uid,
       attendeeUids: [...selected],
       attendeeNames,
+      attendeeProfiles,
     })
     onClose()
   }
@@ -85,13 +86,13 @@ function PlanNightModal({ onClose, onSave, friends, currentUser, currentProfile 
         </div>
         <div className="field">
           <div className="invite-info">
-            <IconCalendarCheck size={14} /> a .ics calendar invite will be generated for download
+            <IconCalendarCheck size={14} /> a .ics calendar invite &amp; game poll will be generated
           </div>
         </div>
         <div className="modal-actions">
           <button className="btn ghost" onClick={onClose}>cancel</button>
           <button className="btn primary" onClick={save} disabled={busy}>
-            <IconCalendarPlus size={14} /> plan it!
+            <IconCalendarPlus size={14} /> {busy ? 'generating poll…' : 'plan it!'}
           </button>
         </div>
       </div>
@@ -104,6 +105,7 @@ export default function Nights() {
   const [nights, setNights] = useState([])
   const [friends, setFriends] = useState([])
   const [showModal, setShowModal] = useState(false)
+  const [copiedId, setCopiedId] = useState(null)
 
   useEffect(() => {
     const q = query(
@@ -131,7 +133,66 @@ export default function Nights() {
   }, [user.uid])
 
   const addNight = async (data) => {
-    await addDoc(collection(db, 'gameNights'), { ...data, createdAt: serverTimestamp() })
+    const { attendeeProfiles, ...nightData } = data
+
+    // Fetch games from all attendee libraries and build poll
+    const allGames = []
+    await Promise.all(
+      nightData.attendeeUids.map(async (uid) => {
+        try {
+          const ownerProfile = attendeeProfiles.find(p => p.uid === uid)
+          const snap = await getDocs(collection(db, 'users', uid, 'games'))
+          snap.docs.forEach(d => {
+            const game = d.data()
+            if (!game.baseGameId) {
+              allGames.push({
+                ...game,
+                id: d.id,
+                ownerId: uid,
+                ownerName: ownerProfile?.displayName || 'Unknown',
+              })
+            }
+          })
+        } catch (_) {}
+      })
+    )
+
+    // Deduplicate by name, score, pick top 5
+    const seen = new Set()
+    const pollGames = allGames
+      .filter(g => {
+        const key = g.name.toLowerCase()
+        if (seen.has(key)) return false
+        seen.add(key)
+        return true
+      })
+      .map(g => ({ ...g, _score: 50 + (g.isNew ? 25 : 0) + Math.random() * 10 }))
+      .sort((a, b) => b._score - a._score)
+      .slice(0, 5)
+      .map(({ _score, ...g }) => ({
+        id: g.id,
+        name: g.name,
+        emoji: g.emoji || '🎲',
+        bggImageUrl: g.bggImageUrl || null,
+        ownerId: g.ownerId,
+        ownerName: g.ownerName,
+        isWriteIn: false,
+        votes: [],
+      }))
+
+    await addDoc(collection(db, 'gameNights'), {
+      ...nightData,
+      pollGames,
+      pollOpen: true,
+      rsvps: { [nightData.hostUid]: 'yes' },
+      createdAt: serverTimestamp(),
+    })
+  }
+
+  const copyLink = (nightId) => {
+    navigator.clipboard.writeText(`${window.location.origin}/night/${nightId}`)
+    setCopiedId(nightId)
+    setTimeout(() => setCopiedId(null), 2000)
   }
 
   return (
@@ -149,20 +210,38 @@ export default function Nights() {
           <p>no nights planned yet — summon your coven!</p>
         </div>
       ) : (
-        nights.map(n => (
-          <div key={n.id} className="night-card">
-            <div className="night-title">{n.name}</div>
-            <div className="night-meta">{n.date} · {n.time} · {n.venue}</div>
-            <div className="attendee-row">
-              {(n.attendeeNames || []).map(name => (
-                <span key={name} className="attendee-chip selected">{name}</span>
-              ))}
+        nights.map(n => {
+          const rsvpYes = Object.values(n.rsvps || {}).filter(v => v === 'yes').length
+          const rsvpNo  = Object.values(n.rsvps || {}).filter(v => v === 'no').length
+          const totalVotes = (n.pollGames || []).reduce((s, g) => s + (g.votes?.length || 0), 0)
+          return (
+            <div key={n.id} className="night-card">
+              <div className="night-title">{n.name}</div>
+              <div className="night-meta">{n.date} · {n.time} · {n.venue}</div>
+              <div className="attendee-row">
+                {(n.attendeeNames || []).map(name => (
+                  <span key={name} className="attendee-chip selected">{name}</span>
+                ))}
+              </div>
+              <div className="night-stats-row">
+                <span className="night-stat">✓ {rsvpYes} yes · ✗ {rsvpNo} no</span>
+                {n.pollGames?.length > 0 && (
+                  <span className="night-stat">
+                    🎲 {n.pollGames.length} games · {totalVotes} votes · {n.pollOpen ? 'open' : '🔒 closed'}
+                  </span>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>
+                <button className="btn ghost" style={{ fontSize: 12 }} onClick={() => copyLink(n.id)}>
+                  <IconClipboard size={13} /> {copiedId === n.id ? 'copied!' : 'copy link'}
+                </button>
+                <button className="btn teal" style={{ fontSize: 12 }} onClick={() => downloadICS(n)}>
+                  <IconDownload size={13} /> Download .ics
+                </button>
+              </div>
             </div>
-            <button className="btn teal" style={{ fontSize: 12 }} onClick={() => downloadICS(n)}>
-              <IconDownload size={13} /> Download .ics
-            </button>
-          </div>
-        ))
+          )
+        })
       )}
 
       {showModal && (

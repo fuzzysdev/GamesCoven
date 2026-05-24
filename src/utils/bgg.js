@@ -1,4 +1,4 @@
-const PROXY = 'https://corsproxy.io/?'
+const PROXY = 'https://api.allorigins.win/raw?url='
 
 function proxied(url) {
   return PROXY + encodeURIComponent(url)
